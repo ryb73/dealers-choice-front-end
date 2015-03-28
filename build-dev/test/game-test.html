@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="/webcomponentsjs/webcomponents.js"></script>
+    <script src="/scripts/jquery.js"></script>
+    <link rel="import" href="/jsonymer/jsonymer-editor.html">
+  </head>
+  <body>
+    <div id="msgPane">
+      <input type="text" id="msgIn">
+      <div id="msgLog"></div>
+    </div>
+    <div id="jsonPane">
+      <jsonymer-editor id="gameState">a
+      </jsonymer-editor>
+    </div>
+
+    <script>
+      document.getElementById("gameState").addEventListener("domReady", function() {
+        document.getElementById("gameState").obj = {test:true};
+      });
+    </script>
+  </body>
+</html>

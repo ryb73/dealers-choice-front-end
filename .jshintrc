@@ -1,0 +1,14 @@
+{
+  "globalstrict": true,
+  "es5": true,
+  "jquery": true,
+  "browser": true,
+  "predef": [ "-console" ],
+
+  "nocomma": false,
+  "unused": true,
+  "bitwise": true,
+  "eqeqeq": true,
+  "latedef": "nofunc",
+  "maxcomplexity": 5
+}
