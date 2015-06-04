@@ -4,14 +4,88 @@
     <script src="/webcomponentsjs/webcomponents.js"></script>
     <script src="/scripts/jquery.js"></script>
     <link rel="import" href="/jsonymer/jsonymer-editor.html">
+    <style>
+      html {
+        height: 100%;
+      }
+
+      body {
+        display: flex;
+        height: 100%;
+      }
+
+      body > div {
+        width: 50%;
+        height: 100%;
+      }
+
+      input {
+        width: 33%;
+      }
+
+      #msgPane {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      #msgPane > div {
+        height: 33%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      #msgPane > div > div {
+        overflow: auto;
+      }
+
+      .msgOut {
+        display: block;
+        color: green;
+        font-weight: bold;
+      }
+
+      .msgOut:before {
+        content: "> ";
+      }
+
+      .msgIn {
+        display: block;
+        color: blue;
+        font-weight: bold;
+      }
+
+      .msgIn:before {
+        content: "< ";
+      }
+
+      .eventIn {
+        display: block;
+        color: red;
+        font-weight: bold;
+      }
+    </style>
   </head>
   <body>
     <div id="msgPane">
-      <input type="text" id="msgIn">
-      <div id="msgLog"></div>
+      <div>
+        <button id="create1">Create Game</button>
+        <input type="text" id="msgInp1">
+        <div id="msgLog1"></div>
+      </div>
+      <div>
+        <button id="create2">Create Game</button>
+        <input type="text" id="msgInp2">
+        <div id="msgLog2"></div>
+      </div>
+      <div>
+        <button id="create3">Create Game</button>
+        <input type="text" id="msgInp3">
+        <div id="msgLog3"></div>
+      </div>
     </div>
     <div id="jsonPane">
-      <jsonymer-editor id="gameState">a
+      <jsonymer-editor id="gameState">loading
       </jsonymer-editor>
     </div>
 
@@ -19,6 +93,59 @@
       document.getElementById("gameState").addEventListener("domReady", function() {
         document.getElementById("gameState").obj = {test:true};
       });
+    </script>
+
+    <script src="/scripts/socket.io/socket.io.js"></script>
+    <script>
+      !function() {
+        "use strict";
+
+        var sock1 = io.connect("http://localhost:3000", { multiplex: false });
+        var sock2 = io.connect("http://localhost:3000", { multiplex: false });
+        var sock3 = io.connect("http://localhost:3000", { multiplex: false });
+
+        function kp(inp, log, sock) {
+          $(inp).keypress(function(event) {
+            if(event.which === 13) {
+              $(log).scrollTop($(log)[0].scrollHeight);
+              sock.emit("action", JSON.parse($(inp).val()));
+              $(log).append($("<span>").addClass("msgOut").html($(inp).val()));
+              $(inp).val("");
+            }
+          });
+        }
+
+        kp("#msgInp1", "#msgLog1", sock1);
+        kp("#msgInp2", "#msgLog2", sock2);
+        kp("#msgInp3", "#msgLog3", sock3);
+
+        function createClick(inp, log, sock) {
+          $(inp).click(function() {
+            var msg = {
+              cmd: "create"
+            };
+            sock.emit("action", msg, ack);
+
+            function ack(gameId) {
+              $(log).append($("<span>").addClass("eventIn").html("game created: " + gameId));
+            }
+          });
+        }
+
+        createClick("#create1", "#msgLog1", sock1);
+        createClick("#create2", "#msgLog2", sock2);
+        createClick("#create3", "#msgLog3", sock3);
+
+        function resp(log, sock) {
+          sock.on("response", function(msg) {
+            $(log).append($("<span>").addClass("msgIn").html(JSON.stringify(msg)));
+          });
+        }
+
+        resp("#msgLog1", sock1);
+        resp("#msgLog2", sock2);
+        resp("#msgLog3", sock3);
+      }();
     </script>
   </body>
 </html>

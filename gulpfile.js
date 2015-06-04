@@ -15,6 +15,7 @@ var gulp       = require("gulp"),
     gulpDebug  = require("gulp-debug");
 
 var BOWER_DIR     = "bower_components/",
+    NODE_DIR      = "node_modules/",
     SRC_DIR       = "src/",
     // TEMP_DIR      = "tmp/",
     BUILD_DIR     = "build/",
@@ -60,6 +61,10 @@ function copyVendor(buildDir, prodMode) {
     return q.all([
       doCopy(BOWER_DIR + "jquery/dist/jquery.min.js",
              buildDir + "scripts", "jquery.js"),
+      doCopy(NODE_DIR + "socket.io-client/socket.io.js",
+             buildDir + "scripts/socket.io"),
+      doCopy(NODE_DIR + "socket.io-client/lib/**",
+             buildDir + "scripts/socket.io/lib")
     ]);
   } else {
     return q.all([
@@ -82,7 +87,11 @@ function copyVendor(buildDir, prodMode) {
       doCopy(BOWER_DIR + "URL/**",
              buildDir + "URL"),
       doCopy(BOWER_DIR + "jsonymer/**",
-             buildDir + "jsonymer")
+             buildDir + "jsonymer"),
+      doCopy(NODE_DIR + "socket.io-client/socket.io.js",
+             buildDir + "scripts/socket.io"),
+      // doCopy(NODE_DIR + "socket.io-client/lib/**",
+      //        buildDir + "scripts/socket.io/lib")
     ]);
   }
 }
