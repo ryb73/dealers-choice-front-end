@@ -61,6 +61,12 @@
 
       .eventIn {
         display: block;
+        color: purple;
+        font-weight: bold;
+      }
+
+      .error {
+        display: block;
         color: red;
         font-weight: bold;
       }
@@ -115,34 +121,47 @@
         }
 
         function handleCommand(inp, log, sock, cmd) {
+          var msg;
+
           if(cmd.startsWith("/create")) {
-            var msg = {
+            msg = {
               cmd: "create"
             };
             sock.emit("action", msg, createAck.bind(null, log));
           } else if(cmd.startsWith("/join")) {
             var args = parseArgs(cmd);
-            var msg = {
+            msg = {
               cmd: "join",
               id: args[1]
             };
             sock.emit("action", msg, joinAck.bind(null, log));
+          } else if(cmd.startsWith("/chat")) {
+            doChat(log, sock, cmd);
           } else {
             $(log).scrollTop($(log)[0].scrollHeight);
-              sock.emit("action", JSON.parse($(inp).val()));
-            $(log).append($("<span>").addClass("msgOut").html($(inp).val()));
+            sock.emit("action", JSON.parse($(inp).val()));
+            append(log, $("<span>").addClass("msgOut").html($(inp).val()));
           }
         }
 
+        function doChat(log, sock, cmd) {
+          var msg = {
+            cmd: "chat",
+            message: cmd.split("/chat ")[1]
+          };
+
+          sock.emit("action", msg);
+        }
+
         function createAck(log, gameId) {
-          $(log).append($("<span>").addClass("eventIn").html("game created: " + gameId));
+          append(log, $("<span>").addClass("eventIn").html("game created: " + gameId));
         }
 
         function joinAck(log, result) {
           if(result === 0) {
-            $(log).append($("<span>").addClass("eventIn").html("joined game"));
+            append(log, $("<span>").addClass("eventIn").html("joined game"));
           } else {
-            $(log).append($("<span>").addClass("eventIn").html("couldn't join: " + result));
+            append(log, $("<span>").addClass("eventIn").html("couldn't join: " + result));
           }
         }
 
@@ -152,7 +171,15 @@
 
         function resp(log, sock) {
           sock.on("response", function(msg) {
-            $(log).append($("<span>").addClass("msgIn").html(JSON.stringify(msg)));
+            append(log, $("<span>").addClass("msgIn").html(JSON.stringify(msg)));
+          });
+
+          sock.on("chat", function(msg) {
+            append(log, $("<span>").addClass("msgIn").html(JSON.stringify(msg)));
+          });
+
+          sock.on("gameError", function(msg) {
+            append(log, $("<span>").addClass("error").html(JSON.stringify(msg)));
           });
         }
 
@@ -163,6 +190,41 @@
         resp("#msgLog1", sock1);
         resp("#msgLog2", sock2);
         resp("#msgLog3", sock3);
+
+        function events(sock, log) {
+          sock.on("connect", function () {
+            append(log, $("<span>").addClass("eventIn").html("connected"));
+          });
+
+          sock.on("disconnect", function () {
+            append(log, $("<span>").addClass("eventIn").html("disconnected"));
+          });
+
+          sock.on("reconnecting", function (attempt) {
+            append(log, $("<span>").addClass("eventIn").html("reconnecting, attempt " + attempt));
+          });
+
+          sock.on("error", function (err) {
+            append(log, $("<span>").addClass("eventIn").html("error: " + JSON.stringify(err)));
+          });
+
+          sock.on("reconnect_error", function (err) {
+            append(log, $("<span>").addClass("eventIn").html("error reconnecting: " + JSON.stringify(err)));
+          });
+
+          sock.on("reconnect_failed", function () {
+            append(log, $("<span>").addClass("eventIn").html("reconnect failed"));
+          });
+        }
+
+        events(sock1, "#msgLog1");
+        events(sock2, "#msgLog2");
+        events(sock3, "#msgLog3");
+
+        function append(log, html) {
+          $(log).append(html);
+          $(log).scrollTop($(log)[0].scrollHeight);
+        }
       })();
     </script>
   </body>
