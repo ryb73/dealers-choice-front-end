@@ -1,0 +1,21 @@
+<link rel="import" href="/components/polymer/polymer.html">
+<link rel="import" href="/components/chat-box.html">
+
+<dom-module id="dc-lobby">
+  <template>
+    <p>{{authInfo.userID}}</p>
+    <p>{{authInfo.accessToken}}</p>
+    <button id="logout">Log Out</button>
+    <div id="connectingIndicator"></div>
+
+    <chat-box id="chat"></chat-box>
+  </template>
+
+  <style>
+    :host chat-box {
+      width: 50%;
+    }
+  </style>
+
+  <script src="dc-lobby.js"></script>
+</dom-module>

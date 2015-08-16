@@ -1,0 +1,77 @@
+<link rel="import" href="polymer/polymer.html">
+
+<dom-module id="chat-box">
+  <template>
+    <div id="people">
+      <template is="dom-repeat" items="{{users}}">
+        <img src$="{{item.imgSrc}}" alt="{{item.name}}">
+      </template>
+    </div>
+
+    <div id="messages">
+      <template is="dom-repeat" items="{{messages}}">
+        <p>
+          <span class="chat-box-username">{{item.user.name}}</span>:
+          <span class="chat-box-message">{{item.message}}</span>
+        </p>
+      </template>
+    </div>
+
+    <div id="msgInputDiv">
+      <input type="text" id="msgInput">
+    </div>
+  </template>
+
+  <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
+
+    :host > div {
+      box-sizing: border-box;
+      width: 100%;
+      border-width: 1px 1px 0 1px; /* no bottom; simulate border collapsing */
+      border-style: solid;
+      border-color: #000;
+    }
+
+    :host > div:last-child {
+      border-bottom-width: 1px; /* bottom it off */
+    }
+
+    :host #people {
+      height: 56px;
+      padding: 5px;
+    }
+
+    :host #people img {
+      margin-right: 5px;
+    }
+
+    :host #msgInputDiv {
+      height: 25px;
+    }
+  </style>
+
+  <script>
+    Polymer({
+      is: "chat-box",
+      properties: {
+        users: {
+          type: Array,
+          value: []
+        },
+        messages: {
+          type: Array,
+          value: []
+        }
+      },
+
+      attached: function() {
+        this.push("users", { name: "Bill Belichick" });
+        this.push("messages", { user: { name: "Bill Belichick " }, message: "howdy folks" });
+      }
+    });
+  </script>
+</dom-module>

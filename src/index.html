@@ -1,0 +1,33 @@
+<!doctype>
+<html>
+  <head>
+    <script src="scripts/dc-shell.js"></script>
+
+    <link rel="import" href="components/dc-lobby/dc-lobby.html">
+    <link rel="import" href="components/dc-login.html">
+
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '409903325878723',
+          xfbml      : false,
+          version    : 'v2.4',
+          status     : true
+        });
+
+        DcShell.afterFbInit();
+      };
+
+      (function(d, s, id){
+         var js, fjs = d.getElementsByTagName(s)[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement(s); js.id = id;
+         js.src = "//connect.facebook.net/en_US/sdk.js";
+         fjs.parentNode.insertBefore(js, fjs);
+       }(document, 'script', 'facebook-jssdk'));
+    </script>
+  </head>
+  <body>
+    <div id="content"></div>
+  </body>
+</html>

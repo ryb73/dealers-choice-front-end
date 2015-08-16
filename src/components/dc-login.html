@@ -1,0 +1,19 @@
+<link rel="import" href="polymer/polymer.html">
+
+<dom-module id="dc-login">
+  <template>
+    <button id="login">Log In</button>
+  </template>
+
+  <script>
+    Polymer({
+      is: "dc-login",
+
+      attached: function() {
+        this.$.login.addEventListener("click", function() {
+          DcShell.tryLogIn();
+        });
+      }
+    });
+  </script>
+</dom-module>

@@ -1,28 +1,31 @@
 "use strict";
 /* jshint node: true, browser: false */
 
+// TODO: make this not ugly and terrible
+
 var gulp       = require("gulp"),
-    //concat     = require("gulp-concat"),
     uglify     = require("gulp-uglify"),
     less       = require("gulp-less"),
     minifyCss  = require("gulp-minify-css"),
     minifyHtml = require("gulp-minify-html"),
-    //vinylPaths = require("vinyl-paths"),
     rename     = require("gulp-rename"),
     gulpIf     = require("gulp-if"),
     q          = require("q"),
     del        = require("del"),
-    gulpDebug  = require("gulp-debug");
+    browserify = require("browserify"),
+    globby     = require("globby"),
+    vinylSourceStream = require("vinyl-source-stream"),
+    path       = require("path"),
+    debug  = require("gulp-debug");
 
 var BOWER_DIR     = "bower_components/",
     NODE_DIR      = "node_modules/",
     SRC_DIR       = "src/",
-    // TEMP_DIR      = "tmp/",
     BUILD_DIR     = "build/",
     BUILD_DEV_DIR = "build-dev/";
 
 gulp.task("prod", ["clean"], function() {
-  build(BUILD_DIR, true);
+  return build(BUILD_DIR, true);
 });
 
 gulp.task("default", ["clean"], function() {
@@ -34,8 +37,8 @@ gulp.task("build scripts", buildScripts.bind(null, SRC_DIR, BUILD_DEV_DIR, false
 gulp.task("build html", buildHtml.bind(null, SRC_DIR, BUILD_DEV_DIR, false));
 
 gulp.task("watch", ["default"], function() {
-  gulp.watch(SRC_DIR + "styles/**/*.less", ["build styles"]);
-  gulp.watch(SRC_DIR + "scripts/**/*.js", ["build scripts"]);
+  gulp.watch(SRC_DIR + "**/*.less", ["build styles"]);
+  gulp.watch(SRC_DIR + "**/*.js", ["build scripts"]);
   gulp.watch(SRC_DIR + "**/*.html", ["build html"]);
 });
 
@@ -46,60 +49,25 @@ function build(buildDir, prodMode) {
     .then(buildHtml.bind(null, SRC_DIR, buildDir, prodMode));
 }
 
-// function createTemp() {
-//   var deferred = q.defer();
-
-//   gulp.src(SRC_DIR + "**/*")
-//     .pipe(gulp.dest(TEMP_DIR))
-//     .on("end", deferred.resolve);
-
-//   return deferred.promise;
-// }
-
 function copyVendor(buildDir, prodMode) {
-  if(prodMode) {
-    return q.all([
-      doCopy(BOWER_DIR + "jquery/dist/jquery.min.js",
-             buildDir + "scripts", "jquery.js"),
-      doCopy(NODE_DIR + "socket.io-client/socket.io.js",
+  var qCopyJobs = [
+    doCopy(NODE_DIR + "socket.io-client/socket.io.js",
              buildDir + "scripts/socket.io"),
-      doCopy(NODE_DIR + "socket.io-client/lib/**",
-             buildDir + "scripts/socket.io/lib")
-    ]);
-  } else {
-    return q.all([
-      doCopy(BOWER_DIR + "jquery/dist/jquery.js",
-             buildDir + "scripts"),
-      doCopy(BOWER_DIR + "webcomponentsjs/**",
-             buildDir + "webcomponentsjs"),
-      doCopy(BOWER_DIR + "polymer/**",
-             buildDir + "polymer"),
-      doCopy(BOWER_DIR + "polymer-expressions/**",
-             buildDir + "polymer-expressions"),
-      doCopy(BOWER_DIR + "polymer-gestures/**",
-             buildDir + "polymer-gestures"),
-      doCopy(BOWER_DIR + "observe-js/**",
-             buildDir + "observe-js"),
-      doCopy(BOWER_DIR + "NodeBind/**",
-             buildDir + "NodeBind"),
-      doCopy(BOWER_DIR + "TemplateBinding/**",
-             buildDir + "TemplateBinding"),
-      doCopy(BOWER_DIR + "URL/**",
-             buildDir + "URL"),
-      doCopy(BOWER_DIR + "jsonymer/**",
-             buildDir + "jsonymer"),
-      doCopy(NODE_DIR + "socket.io-client/socket.io.js",
-             buildDir + "scripts/socket.io"),
-      // doCopy(NODE_DIR + "socket.io-client/lib/**",
-      //        buildDir + "scripts/socket.io/lib")
-    ]);
-  }
+
+    doCopy(NODE_DIR + "socket.io-client/lib/**",
+           buildDir + "scripts/socket.io/lib"),
+
+    doCopy([BOWER_DIR + "polymer/*.html"],
+           buildDir + "components/polymer")
+  ];
+
+  return q.all(qCopyJobs);
 }
 
 function doCopy(src, dest, fileName) {
   var deferred = q.defer();
 
-  gulp.src([src])
+  gulp.src(src)
     .pipe(gulpIf(!!fileName, rename(fileName)))
     .pipe(gulp.dest(dest))
     .on("end", deferred.resolve);
@@ -109,12 +77,14 @@ function doCopy(src, dest, fileName) {
 
 function buildStyles(fromDir, toDir, prodMode) {
   var deferred = q.defer(),
-      path = fromDir + "styles/**/*.less";
+      path = fromDir + "**/*.less";
 
   gulp.src(path)
+    // .pipe(debug())
     .pipe(less())
     .pipe(gulpIf(prodMode, minifyCss()))
-    .pipe(gulp.dest(toDir + "styles"))
+    .pipe(gulp.dest(toDir))
+    // .pipe(debug())
     .on("end", deferred.resolve);
 
   return deferred.promise;
@@ -122,14 +92,46 @@ function buildStyles(fromDir, toDir, prodMode) {
 
 function buildScripts(fromDir, toDir, prodMode) {
   var deferred = q.defer(),
-      path = fromDir + "scripts/**/*.js";
+      subDeferrals,
+      srcPath = fromDir + "**/*.js";
 
-  gulp.src(path)
-    .pipe(gulpIf(prodMode, uglify()))
-    .pipe(gulp.dest(toDir + "scripts"))
-    .on("end", deferred.resolve);
+  globby([ srcPath ], function(err, myJsPaths) {
+    subDeferrals = new Array(myJsPaths.length);
+
+    for(var i = 0; i < myJsPaths.length; ++i) {
+       var b = browserify(myJsPaths[i], {
+        paths: [
+          "./" + BOWER_DIR + "webcomponentsjs/"
+        ]
+      });
+
+      subDeferrals[i] = q.defer();
+
+      var fullToDir = getFullToDir(myJsPaths[i], fromDir, toDir)
+
+      b.bundle()
+        .pipe(vinylSourceStream(path.basename(myJsPaths[i])))
+        .pipe(gulp.dest(fullToDir))
+        .on("end", subDeferrals[i].resolve);
+    }
+
+    q.all(subDeferrals.map(function(deferred) {
+      return deferred.promise;
+    })).then(deferred.resolve);
+  });
 
   return deferred.promise;
+}
+
+function getFullToDir(filename, fromBase, toBase) {
+  var splitPath = path.dirname(filename).split(path.sep);
+  var splitFrom = path.normalize(fromBase).split(path.sep);
+  var splitTo = path.normalize(toBase).split(path.sep);
+
+  while(splitFrom.length > 0 && splitPath.length > 0 && splitFrom[0] === splitPath[0])
+    splitPath.shift();
+
+  return path.normalize(splitTo.concat(splitPath).join(path.sep));
 }
 
 function buildHtml(fromDir, toDir, prodMode) {
@@ -148,16 +150,6 @@ function buildHtml(fromDir, toDir, prodMode) {
 
   return deferred.promise;
 }
-
-// function copyTempToBuild(buildDir) {
-//   var deferred = q.defer();
-
-//   gulp.src(TEMP_DIR + "**/*")
-//     .pipe(gulp.dest(buildDir))
-//     .on("end", deferred.resolve);
-
-//   return deferred.promise;
-// }
 
 gulp.task("clean", function(cb) {
   del([ BUILD_DIR, BUILD_DEV_DIR ], cb);
