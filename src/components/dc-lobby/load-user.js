@@ -7,7 +7,7 @@ function loadUser(userId) {
 
   FB.api("/" + userId,
     {
-      fields: [ "id", "name", "picture" ]
+      fields: [ "id", "first_name", "name", "picture" ]
     },
     function(response) {
       if(response.error) {
@@ -26,6 +26,7 @@ function loadUser(userId) {
 function User($response) {
   var id = $response.id;
   var name = $response.name;
+  var firstName = $response.firstName;
   var imgSrc = $response.picture.data.url;
   $response = null;
 
@@ -42,6 +43,10 @@ function User($response) {
       enumerable: true,
       get: function() { return imgSrc; }
     },
+    firstName: {
+      enumerable: true,
+      get: function() { return firstName; }
+    }
   });
 }
 

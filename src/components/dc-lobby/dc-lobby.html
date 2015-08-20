@@ -8,12 +8,20 @@
     <button id="logout">Log Out</button>
     <div id="connectingIndicator"></div>
 
-    <chat-box id="chat" users="{{users}}"></chat-box>
+    <game-list games="{{_games}}"></game-list>
+
+    <chat-box id="chat" users="{{_users}}" messages="{{_messages}}"
+      on-send="_sendMsg">
+    </chat-box>
   </template>
 
   <style>
     :host chat-box {
       width: 50%;
+
+      --chat-box-pending: {
+        background-color: #CCC;
+      };
     }
   </style>
 

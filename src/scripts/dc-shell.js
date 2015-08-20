@@ -1,15 +1,16 @@
 "use strict";
 
 require("webcomponents-lite");
-var $  = require("jquery"),
-    io = require("socket.io-client");
+var $           = require("jquery"),
+    io          = require("socket.io-client"),
+    dcConstants = require("dc-constants"),
+    MessageType = dcConstants.MessageType;
 
 function DcShell() {
   var socket;
 
   function setLoggedIn(authInfo) {
     console.log("logged in");
-    console.log(authInfo);
 
     var lobby = document.createElement("dc-lobby");
     lobby.authInfo = authInfo;
@@ -31,6 +32,12 @@ function DcShell() {
 
   function tryLogOut() {
     FB.logout(function(response) {
+      if(socket) {
+        var msg = { cmd: MessageType.Disconnect };
+        socket.emit("action", msg);
+        socket = null;
+      }
+
       setLoggedOut();
     });
   }
@@ -47,10 +54,31 @@ function DcShell() {
   function getSocket() {
     if(socket) return socket;
 
-    socket = io.connect("http://localhost:3000");
+    console.log("connecting socket");
+    socket = io.connect("http://localhost:3000", { forceNew: true });
+    registerSocketEvents();
+
     return socket;
   }
   this.getSocket = getSocket;
+
+  function registerSocketEvents() {
+    socket.on("error", function(err) {
+      console.log("connect error", err);
+    });
+
+    socket.on("reconnecting", function() {
+      console.log("reconnecting");
+    });
+
+    socket.on("reconnect_error", function(err) {
+      console.log("reconnect error", err);
+    });
+
+    socket.on("reconnect_failed", function() {
+      console.log("reconnect failed");
+    });
+  }
 
   function afterFbInit() {
     setLoggedOut();

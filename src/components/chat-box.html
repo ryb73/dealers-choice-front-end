@@ -9,8 +9,8 @@
     </div>
 
     <div id="messages">
-      <template is="dom-repeat" items="{{messages}}">
-        <p>
+      <template id="msgTemplate" is="dom-repeat" items="{{messages}}">
+        <p class$="{{_messageClass(item.pending)}}">
           <span class="chat-box-username">{{item.user.name}}</span>:
           <span class="chat-box-message">{{item.message}}</span>
         </p>
@@ -54,6 +54,10 @@
     :host #msgInputDiv {
       height: 25px;
     }
+
+    :host .chat-box-pending {
+      @apply(--chat-box-pending);
+    }
   </style>
 
   <script>
@@ -62,16 +66,39 @@
       properties: {
         users: {
           type: Array,
-          value: []
+          value: null
         },
         messages: {
           type: Array,
-          value: []
+          value: null,
         }
       },
 
       attached: function() {
-        this.push("messages", { user: { name: "Bill Belichick " }, message: "howdy folks" });
+        this.$.msgInput.addEventListener("keydown", function(e) {
+          if(e.keyCode === 13) {
+            this._doSend();
+          }
+        }.bind(this));
+      },
+
+      _doSend: function() {
+        var enteredMsg = this.$.msgInput.value;
+        if(enteredMsg === "") return;
+
+        this.fire("send", enteredMsg);
+        this.$.msgInput.value = "";
+      },
+
+      _messageClass: function(pending) {
+        return (pending) ? "chat-box-pending" : "";
+      },
+
+      refresh: function() {
+        this.$.msgTemplate.items = null;
+        this.$.msgTemplate.render();
+        this.$.msgTemplate.items = this.messages;
+        this.$.msgTemplate.render();
       }
     });
   </script>
