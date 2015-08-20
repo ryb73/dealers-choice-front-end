@@ -3,7 +3,8 @@
 var dcConstants = require("dc-constants"),
     MessageType = dcConstants.MessageType,
     q           = require("q"),
-    User        = require("./user");
+    _           = require("lodash"),
+    loadUser    = require("./load-user");
 
 var socket;
 
@@ -43,6 +44,8 @@ Polymer({
   _onConnect: function() {
     console.log("lobby: connected");
 
+    socket.on("action", this._onAction.bind(this));
+
     this._showConnectingIndicator("Entering lobby...");
 
     var msg = {
@@ -56,16 +59,36 @@ Polymer({
   _onRegister: function(userIds) {
     console.log("lobby: registered");
 
+    userIds = _.remove(userIds, this.authInfo.userId);
     var qUsers = userIds.map(function(userId) {
-      return new User(userId);
+      return loadUser(userId);
     });
 
     q.all(qUsers)
       .done(function(users) {
         console.log("loaded users");
-        this.users = this.$.chat.users = users;
+        this.users = users;
       }.bind(this));
 
     this._hideConnectingIndicator();
+  },
+
+  _onAction: function(msg) {
+    switch(msg.cmd) {
+      case MessageType.UserEnteredLobby:
+        this._userEnteredLobby(msg);
+        break;
+      default:
+        console.log("Unexpected message type: " + msg.cmd);
+    }
+  },
+
+  _userEnteredLobby: function(msg) {
+    console.log("user entered lobby: " + msg.userId);
+
+    loadUser(msg.userId)
+      .done(function(user) {
+        this.push("users", user);
+      }.bind(this));
   }
 });

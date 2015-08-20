@@ -15,9 +15,12 @@ function loadUser(userId) {
         return;
       }
 
-      deferred.resolve(new User(response));
+      var user = new User(response);
+      deferred.resolve(user);
     }
   );
+
+  return deferred.promise;
 }
 
 function User($response) {

@@ -41,11 +41,13 @@
     }
 
     :host #people {
-      height: 56px;
+      height: 61px;
       padding: 5px;
     }
 
     :host #people img {
+      height: 50px;
+      width: auto;
       margin-right: 5px;
     }
 
@@ -69,7 +71,6 @@
       },
 
       attached: function() {
-        this.push("users", { name: "Bill Belichick" });
         this.push("messages", { user: { name: "Bill Belichick " }, message: "howdy folks" });
       }
     });
