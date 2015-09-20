@@ -43,16 +43,16 @@ gulp.task("watch", ["default"], function() {
 });
 
 function build(buildDir, prodMode) {
-  return copyVendor(buildDir, prodMode)
+  return copyVendor(buildDir)
     .then(buildStyles.bind(null, SRC_DIR, buildDir, prodMode))
     .then(buildScripts.bind(null, SRC_DIR, buildDir, prodMode))
     .then(buildHtml.bind(null, SRC_DIR, buildDir, prodMode));
 }
 
-function copyVendor(buildDir, prodMode) {
+function copyVendor(buildDir) {
   var qCopyJobs = [
     doCopy(NODE_DIR + "socket.io-client/socket.io.js",
-             buildDir + "scripts/socket.io"),
+           buildDir + "scripts/socket.io"),
 
     doCopy(NODE_DIR + "socket.io-client/lib/**",
            buildDir + "scripts/socket.io/lib"),

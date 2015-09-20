@@ -1,0 +1,63 @@
+<link rel="import" href="/components/polymer/polymer.html">
+
+<dom-module id="game-list">
+  <template>
+    <template is="dom-repeat" items="{{games}}">
+      <div class="game-list-game">
+        <div class="game-list-players">
+          <template is="dom-repeat" items="{{item.users}}">
+            <img src$="{{item.imgSrc}}" alt$="{{item.name}}"
+                 title$="{{item.name}}">
+          </template>
+
+          <span class="game-list-name">{{item.name}}</span>
+        </div>
+      </div>
+    </template>
+
+    <div id="newGame">+ New Game</div>
+  </template>
+
+  <style>
+    .game-list-game, #newGame {
+      float: left;
+      width: 150px;
+      height: 150px;
+      margin: 15px;
+
+      cursor: pointer;
+      border: 1px solid #AAA;
+    }
+
+    .game-list-game:hover, #newGame:hover {
+      border-color: #555;
+    }
+  </style>
+
+  <script>
+    (function() {
+      "use strict";
+
+      Polymer({
+        is: "game-list",
+        properties: {
+          games: {
+            type: Array,
+            value: null
+          }
+        },
+
+        attached: function() {
+          if(!this.games) this.games = [];
+
+          this.$.newGame.addEventListener("click",
+            this._newGame.bind(this), false);
+        },
+
+        _newGame: function() {
+          this.fire("new-game");
+        }
+      });
+    }());
+  </script>
+</dom-module>

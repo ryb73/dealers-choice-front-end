@@ -1,14 +1,14 @@
 {
   "globalstrict": true,
   "es5": true,
-  "jquery": true,
   "browser": true,
-  "predef": [ "-console" ],
+  "predef": [ "require", "module", "console", "FB" ],
 
   "nocomma": false,
-  "unused": true,
+  "unused": "var",
   "bitwise": true,
   "eqeqeq": true,
   "latedef": "nofunc",
-  "maxcomplexity": 5
+  "maxcomplexity": 5,
+  "newcap": false
 }

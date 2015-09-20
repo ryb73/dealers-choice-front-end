@@ -1,4 +1,5 @@
 "use strict";
+/* global Polymer, DcShell */
 
 var dcConstants  = require("dc-constants"),
     MessageType  = dcConstants.MessageType,
@@ -63,12 +64,27 @@ Polymer({
 
     this._showConnectingIndicator("Entering lobby...");
 
+    this._register();
+    this._getGameList();
+  },
+
+  _register: function() {
     var msg = {
       cmd: MessageType.RegisterUser,
       userId: this.authInfo.userID,
       accessToken: this.authInfo.accessToken
     };
     socket.emit("action", msg, this._onRegister.bind(this));
+  },
+
+  _getGameList: function() {
+    var msg = { cmd: MessageType.ListGames };
+    socket.emit("action", msg, this._listGames.bind(this));
+  },
+
+  _listGames: function(response) {
+    console.log("listing games");
+    console.log(response);
   },
 
   _onRegister: function(userIds) {
@@ -165,5 +181,19 @@ Polymer({
 
   _getUserById: function(id) {
     return this._users[this._userIdxById(id)];
+  },
+
+  _newGame: function() {
+    var msg = { cmd: MessageType.CreateGame };
+    socket.emit("action", msg, this._gameCreated.bind(this));
+  },
+
+  _gameCreated: function(response) {
+    console.log("create game result: ", response.result);
+    if(response.result !== ResponseCode.CreateOk) {
+      alert("Error creating game:\n\n" + JSON.stringify(response));
+    }
+
+    DcShell.enterGameRoom();
   }
 });

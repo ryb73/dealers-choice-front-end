@@ -1,5 +1,6 @@
 <link rel="import" href="/components/polymer/polymer.html">
 <link rel="import" href="/components/chat-box.html">
+<link rel="import" href="/components/game-list.html">
 
 <dom-module id="dc-lobby">
   <template>
@@ -8,7 +9,8 @@
     <button id="logout">Log Out</button>
     <div id="connectingIndicator"></div>
 
-    <game-list games="{{_games}}"></game-list>
+    <game-list games="{{_games}}" on-new-game="_newGame">
+    </game-list>
 
     <chat-box id="chat" users="{{_users}}" messages="{{_messages}}"
       on-send="_sendMsg">

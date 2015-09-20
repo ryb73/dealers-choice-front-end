@@ -1,10 +1,12 @@
 "use strict";
+/* global FB */
 
-require("webcomponents-lite");
 var $           = require("jquery"),
     io          = require("socket.io-client"),
     dcConstants = require("dc-constants"),
     MessageType = dcConstants.MessageType;
+
+require("webcomponents-lite");
 
 function DcShell() {
   var socket;
