@@ -1,0 +1,117 @@
+<link rel="import" href="/components/polymer/polymer.html">
+
+<dom-module id="dc-game-canvas">
+  <template>
+    <canvas id="gameCanvas" width="100%" height="100%"></canvas>
+  </template>
+
+  <style>
+    :host {
+      display: block;
+    }
+  </style>
+
+  <script>
+    (function() {
+      "use strict";
+
+      var stage;
+
+      Polymer({
+        is: "dc-game-canvas",
+        properties: {
+          gameState: {
+            type: Object,
+            value: null
+          }
+        },
+
+        attached: function() {
+          var canvas = this.$.gameCanvas;
+          stage = new createjs.Stage(canvas);
+
+          this._setCanvasSize();
+          $(window).resize(this._setCanvasSize.bind(this));
+        },
+
+        refresh: function() {
+          // debugger;
+          stage.removeAllChildren();
+          this._drawPlayers();
+          stage.update();
+        },
+
+        _drawPlayers: function() {
+          this.gameState.users.forEach(function(user, idx) {
+            var playerBox = new PlayerBox(user, idx === 0);
+            var coords = this._getCoordsForPlayer(idx);
+
+            playerBox.x = coords.x;
+            playerBox.y = coords.y;
+            playerBox.rotation = coords.rotationRad *
+                                  180 / Math.PI;
+            stage.addChild(playerBox);
+
+            this._textAt(idx, coords);
+          }.bind(this));
+        },
+
+        _textAt: function(txt, coords) {
+          var rect = new createjs.Shape();
+          rect.graphics.beginFill("red")
+            .drawRect(coords.x - 2, coords.y - 2, 5, 5);
+          stage.addChild(rect);
+
+          var lbl = new createjs.Text(txt, "16px Arial", "#000");
+          lbl.x = coords.x;
+          lbl.y = coords.y;
+          stage.addChild(lbl);
+        },
+
+        _getCoordsForPlayer: function(playerIndex) {
+          var origin = {
+            x: this._width() / 2,
+            y: this._height() / 2
+          };
+          var radius = (this._height() * 0.8) / 2;
+
+          var anglePerPlayer =
+            2 * Math.PI / this.gameState.users.length;
+
+          var angle = (anglePerPlayer * playerIndex) +
+            Math.PI / 2; // begin at bottom of screen
+
+          return {
+            x: origin.x + Math.cos(angle) * radius,
+            y: origin.y + Math.sin(angle) * radius,
+
+            // Our starting angle is Math.PI / 2, at which point
+            // we have zero rotation. As we go around the circle,
+            // the player box should rotate at the same rate
+            rotationRad: angle - Math.PI / 2
+          };
+        },
+
+        _setCanvasSize: function() {
+          this.$.gameCanvas.width = 0;
+          this.$.gameCanvas.height = 0;
+          console.log(this.clientWidth, this.clientHeight);
+          var cw = this.clientWidth;
+          var ch = this.clientHeight;
+          this.$.gameCanvas.width = cw;
+          this.$.gameCanvas.height = ch;
+          console.log(this.clientWidth, this.clientHeight);
+          this.refresh();
+        },
+
+        _width: function() {
+          return this.$.gameCanvas.width;
+        },
+
+        _height: function() {
+          return this.$.gameCanvas.height;
+        }
+      });
+    }());
+  </script>
+</dom-module>

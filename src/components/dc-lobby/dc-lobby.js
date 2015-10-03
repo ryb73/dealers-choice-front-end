@@ -194,6 +194,6 @@ Polymer({
       alert("Error creating game:\n\n" + JSON.stringify(response));
     }
 
-    DcShell.enterGameRoom();
+    DcShell.enterGameRoom({});
   }
 });

@@ -61,45 +61,51 @@
   </style>
 
   <script>
-    Polymer({
-      is: "chat-box",
-      properties: {
-        users: {
-          type: Array,
-          value: null
-        },
-        messages: {
-          type: Array,
-          value: null,
-        }
-      },
+    (function() {
+      "use strict";
 
-      attached: function() {
-        this.$.msgInput.addEventListener("keydown", function(e) {
-          if(e.keyCode === 13) {
-            this._doSend();
+      Polymer({
+        is: "chat-box",
+        properties: {
+          users: {
+            type: Array,
+            value: null
+          },
+          messages: {
+            type: Array,
+            value: null,
           }
-        }.bind(this));
-      },
+        },
 
-      _doSend: function() {
-        var enteredMsg = this.$.msgInput.value;
-        if(enteredMsg === "") return;
+        attached: function() {
+          this.$.msgInput.addEventListener("keydown", function(e) {
+            if(e.keyCode === 13) {
+              this._doSend();
+            }
+          }.bind(this));
+        },
 
-        this.fire("send", enteredMsg);
-        this.$.msgInput.value = "";
-      },
+        _doSend: function() {
+          var enteredMsg = this.$.msgInput.value;
+          if(enteredMsg === "") return;
 
-      _messageClass: function(pending) {
-        return (pending) ? "chat-box-pending" : "";
-      },
+          this.fire("send", enteredMsg);
+          this.$.msgInput.value = "";
+        },
 
-      refresh: function() {
-        this.$.msgTemplate.items = null;
-        this.$.msgTemplate.render();
-        this.$.msgTemplate.items = this.messages;
-        this.$.msgTemplate.render();
-      }
-    });
+        _messageClass: function(pending) {
+          return (pending) ? "chat-box-pending" : "";
+        },
+
+        refresh: function() {
+          // why didn't I put a comment here?
+          // I think this is to get around a polymer bug
+          this.$.msgTemplate.items = null;
+          this.$.msgTemplate.render();
+          this.$.msgTemplate.items = this.messages;
+          this.$.msgTemplate.render();
+        }
+      });
+    }());
   </script>
 </dom-module>

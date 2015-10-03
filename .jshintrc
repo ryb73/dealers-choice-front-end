@@ -1,5 +1,5 @@
 {
-  "globalstrict": true,
+  "strict": true,
   "es5": true,
   "browser": true,
   "predef": [ "require", "module", "console", "FB" ],

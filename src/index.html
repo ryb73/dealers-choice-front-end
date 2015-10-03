@@ -1,30 +1,38 @@
 <!doctype>
 <html>
   <head>
+    <script src="scripts/easel/easeljs-0.8.1.combined.js"></script>
     <script src="scripts/dc-shell.js"></script>
 
     <link rel="import" href="components/dc-lobby/dc-lobby.html">
     <link rel="import" href="components/dc-login.html">
+    <link rel="import" href="components/dc-game-canvas/dc-game-canvas.html">
+
+    <link rel="stylesheet" href="style/base.css">
 
     <script>
-      window.fbAsyncInit = function() {
-        FB.init({
-          appId      : '409903325878723',
-          xfbml      : false,
-          version    : 'v2.4',
-          status     : true
-        });
+      (function() {
+        "use strict";
 
-        DcShell.afterFbInit();
-      };
+        window.fbAsyncInit = function() {
+          FB.init({
+            appId      : '409903325878723',
+            xfbml      : false,
+            version    : 'v2.4',
+            status     : true
+          });
 
-      (function(d, s, id){
-         var js, fjs = d.getElementsByTagName(s)[0];
-         if (d.getElementById(id)) {return;}
-         js = d.createElement(s); js.id = id;
-         js.src = "//connect.facebook.net/en_US/sdk.js";
-         fjs.parentNode.insertBefore(js, fjs);
-       }(document, 'script', 'facebook-jssdk'));
+          DcShell.afterFbInit();
+        };
+
+        (function(d, s, id){
+           var js, fjs = d.getElementsByTagName(s)[0];
+           if (d.getElementById(id)) {return;}
+           js = d.createElement(s); js.id = id;
+           js.src = "//connect.facebook.net/en_US/sdk.js";
+           fjs.parentNode.insertBefore(js, fjs);
+         }(document, 'script', 'facebook-jssdk'));
+      }());
     </script>
   </head>
   <body>

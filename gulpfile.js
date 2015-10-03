@@ -58,7 +58,10 @@ function copyVendor(buildDir) {
            buildDir + "scripts/socket.io/lib"),
 
     doCopy([BOWER_DIR + "polymer/*.html"],
-           buildDir + "components/polymer")
+           buildDir + "components/polymer"),
+
+    doCopy([BOWER_DIR + "EaselJS/lib/**.js"],
+           buildDir + "scripts/easel")
   ];
 
   return q.all(qCopyJobs);
@@ -107,7 +110,7 @@ function buildScripts(fromDir, toDir, prodMode) {
 
       subDeferrals[i] = q.defer();
 
-      var fullToDir = getFullToDir(myJsPaths[i], fromDir, toDir)
+      var fullToDir = getFullToDir(myJsPaths[i], fromDir, toDir);
 
       b.bundle()
         .pipe(vinylSourceStream(path.basename(myJsPaths[i])))

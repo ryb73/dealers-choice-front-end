@@ -1,14 +1,16 @@
-"use strict";
 /* global FB */
 
-var $           = require("jquery"),
-    io          = require("socket.io-client"),
+var io          = require("socket.io-client"),
     dcConstants = require("dc-constants"),
     MessageType = dcConstants.MessageType;
 
+var $ = window.$ = require("jquery");
 require("webcomponents-lite");
+require("./game-ui");
 
 function DcShell() {
+  "use strict";
+
   var socket;
 
   function setLoggedIn(authInfo) {
@@ -91,6 +93,18 @@ function DcShell() {
     });
   }
   this.afterFbInit = afterFbInit;
+
+  function enterGameRoom(initialGameState) {
+    console.log("entering game room");
+
+    var canvas = document.createElement("dc-game-canvas");
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.gameState = initialGameState;
+
+    $("#content").empty().append(canvas);
+  }
+  this.enterGameRoom = enterGameRoom;
 }
 
 window.DcShell = window.DcShell || new DcShell();
