@@ -13,7 +13,7 @@ function DcCardDisplay(availWidth, cards, isMe) {
 
 var p = createjs.extend(DcCardDisplay, createjs.Container);
 
-p.addDcCards = function(availWidth, cards, isMe) {
+p.addCards = function(availWidth, cards, isMe) {
   var cardsShape;
 
   var idealCSF = (this.isMe) ? 1.25 : 0.75;

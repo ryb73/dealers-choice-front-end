@@ -51,6 +51,8 @@ $(function() {
       addPlayer();
     } else if(args[0] === "hs") {
       setHandSize(args[1], args[2]);
+    } else if(args[0] === "nc") {
+      setNumCars(args[1], args[2]);
     } else {
       alert("illegal command: " + args[0]);
       return;
@@ -66,6 +68,15 @@ $(function() {
 
     getCanvas().gameState
       .users[playerIdx].player.dcCards = dcCards;
+  }
+
+  function setNumCars(playerIdx, n) {
+    var cars = [];
+    for(var i = 0; i < n; ++i)
+      cars.push("");
+
+    getCanvas().gameState
+      .users[playerIdx].player.cars = cars;
   }
 
   function removePlayer(n) {

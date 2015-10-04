@@ -21,10 +21,17 @@ var p = createjs.extend(PlayerBox, createjs.Container);
 p.setup = function() {
   this.drawBackground();
 
-  this.addChild(
-    new DcCardDisplay(this.user.player.dcCards),
-    this.isMe
+  var carDisplay = new CarDisplay(this.user.player.cars);
+  carDisplay.x = (BOX_WIDTH - carDisplay.getBounds().width) / 2;
+  carDisplay.regY = carDisplay.getBounds().height;
+  carDisplay.y = 50;
+  this.addChild(carDisplay);
+
+  var dcCardDisplay = new DcCardDisplay(
+    BOX_WIDTH, this.user.player.dcCards, this.isMe
   );
+  dcCardDisplay.y = 60;
+  this.addChild(dcCardDisplay);
 };
 
 p.drawBackground = function() {
