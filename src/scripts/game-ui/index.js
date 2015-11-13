@@ -2,3 +2,4 @@
 "use strict";
 
 window.PlayerBox = require("./player-box");
+window.Decks = require("./decks");

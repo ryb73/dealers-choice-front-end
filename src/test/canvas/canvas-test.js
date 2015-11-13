@@ -9,6 +9,7 @@ $(function() {
   canvas.gameState = {
     users: [
       {
+        name: "player1",
         player: {
           dcCards: ["","","","",""],
           cars: ["", "", ""],
@@ -17,14 +18,16 @@ $(function() {
       },
 
       {
+        name: "player2",
         player: {
           dcCards: ["","","","",""],
-          cars: ["", "", ""],
+          cars: [""],
           insurances: ["", ""],
         }
       },
 
       {
+        name: "player3",
         player: {
           dcCards: ["","","","",""],
           cars: ["", "", ""],
@@ -44,6 +47,7 @@ $(function() {
   });
 
   function handleCommand(cmd) {
+    /* jshint maxcomplexity: 10 */
     var args = cmd.split("/");
     if(args[0] === "rp") {
       removePlayer(args[1]);
@@ -53,12 +57,16 @@ $(function() {
       setHandSize(args[1], args[2]);
     } else if(args[0] === "nc") {
       setNumCars(args[1], args[2]);
+    } else if(args[0] === "gc") {
+      giveCar(args[1]);
     } else {
       alert("illegal command: " + args[0]);
       return;
     }
+  }
 
-    getCanvas().refresh();
+  function giveCar(playerIdx) {
+    getCanvas().giveCarFromDeck(playerIdx, "");
   }
 
   function setHandSize(playerIdx, n) {
@@ -80,11 +88,12 @@ $(function() {
   }
 
   function removePlayer(n) {
-    getCanvas().gameState.users.splice(n, 1);
+    getCanvas().removePlayer(n);
   }
 
   function addPlayer(n) {
-    getCanvas().gameState.users.push({
+    getCanvas().addPlayer({
+      name: "player" + (getCanvas().gameState.users.length+1),
       player: {
         dcCards: ["","","","",""],
         cars: ["", "", ""],

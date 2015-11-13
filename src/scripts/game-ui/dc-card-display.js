@@ -8,6 +8,7 @@ var CARD_WIDTH  = 40,
 function DcCardDisplay(availWidth, cards, isMe) {
   this.Container_constructor();
 
+  this.setBounds(0, 0, availWidth, CARD_HEIGHT);
   this.addCards(availWidth, cards, isMe);
 }
 
