@@ -6,13 +6,14 @@ $(function() {
   "use strict";
 
   var canvas = document.createElement("dc-game-canvas");
+  canvas.debugMode = true;
   canvas.gameState = {
     users: [
       {
         name: "player1",
         player: {
           dcCards: ["","","","",""],
-          cars: ["", "", ""],
+          cars: [""],
           insurances: ["", ""],
         }
       },

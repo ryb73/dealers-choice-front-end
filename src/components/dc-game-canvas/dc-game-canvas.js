@@ -5,6 +5,38 @@
 var stage; // assume only one canvas per page
 var decks;
 
+function normalizeCoords(dispObj, coords) {
+  var focalAngleRad = dispObj.rotation * Math.PI / 180;
+  var oppositeRad = (Math.PI - focalAngleRad) / 2;
+
+  // Distance from register point to coords
+  var relX = coords.x - dispObj.regX;
+  var relY = dispObj.regY - coords.y; // opposite of cartesian
+  var distFromFocal = Math.sqrt(Math.pow(relX, 2) +
+                                Math.pow(relY, 2));
+  if(relX < 0) distFromFocal = -distFromFocal;
+
+  // Distance between the relative and normalized point
+  var pointDistance = distFromFocal * Math.sin(focalAngleRad) /
+                      Math.sin(oppositeRad);
+
+  var totalRelativeRad = Math.asin(relY / distFromFocal);
+
+  var xRad = (Math.PI / 2) - focalAngleRad - oppositeRad +
+              totalRelativeRad;
+
+  var x = Math.sin(xRad) * pointDistance +
+           coords.x - dispObj.regX;
+  var y = Math.cos(xRad) * pointDistance +
+           coords.y - dispObj.regY;
+
+  return {
+    x: x,
+    y: y,
+    rotation: dispObj.rotation
+  };
+}
+
 Polymer({
   is: "dc-game-canvas",
   properties: {
@@ -58,8 +90,13 @@ Polymer({
     // coords. The coords will be in relation to the
     // player box; we want them in relation to the decks.
     var carCoords = user.playerBox.makeSpaceForCar(250);
-    carCoords.x += user.playerBox.x - decks.x;
-    carCoords.y += user.playerBox.y - decks.y;
+    debugger;
+    carCoords = normalizeCoords(user.playerBox, carCoords);
+    carCoords.x += user.playerBox.x;
+    carCoords.y += user.playerBox.y;
+    this._textAt({}, "A", carCoords);
+    carCoords.x -= decks.x - decks.regX;
+    carCoords.y -= decks.y - decks.regY;
 
     var qNewCard = decks.giveCar(carCoords, 250);
     // user.playerBox.putCarInBlankSpace(qNewCard);

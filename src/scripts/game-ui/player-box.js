@@ -90,7 +90,7 @@ p.makeSpaceForCar = function(transitionTime) {
   // We'll get the coords in relation to the carDisplay
   // Return them in relation to the playerBox
   coords.x += this._carDisplay.x;
-  coords.y += this._carDisplay.y;
+  coords.y += this._carDisplay.y - this._carDisplay.regY;
   return coords;
 };
 
