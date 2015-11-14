@@ -43,11 +43,10 @@ p._createBackground = function() {
 };
 
 p._createCars = function(cars) {
-  // Initial reg point is 0,0
+  // Reg point is 0,0
   var carDisplay = new CarDisplay(cars);
   var carCoords = getCoordsForCars(carDisplay);
   carDisplay.x = carCoords.x;
-  carDisplay.regY = carCoords.regY;
   carDisplay.y = carCoords.y;
   this.addChild(carDisplay);
 
@@ -84,21 +83,21 @@ p.setRotation = function(rotationDeg) {
 
 p.makeSpaceForCar = function(transitionTime) {
   var coords = this._carDisplay.makeSpaceForCar(transitionTime);
+  var carDispCoords = getCoordsForCars(this._carDisplay);
   createjs.Tween.get(this._carDisplay)
-    .to(getCoordsForCars(this._carDisplay), transitionTime);
+    .to(carDispCoords, transitionTime);
 
   // We'll get the coords in relation to the carDisplay
   // Return them in relation to the playerBox
-  coords.x += this._carDisplay.x;
-  coords.y += this._carDisplay.y - this._carDisplay.regY;
+  coords.x += carDispCoords.x;
+  coords.y += carDispCoords.y;
   return coords;
 };
 
 function getCoordsForCars(carDisplay) {
   return {
     x: (BOX_WIDTH - carDisplay.getBounds().width) / 2,
-    y: 50,
-    regY: carDisplay.getBounds().height
+    y: 50 - carDisplay.getBounds().height
   };
 }
 

@@ -11,6 +11,7 @@ function CarDisplay(cars) {
   this.Container_constructor();
 
   this._carSlots = [];
+  this._openSlotIdx = 0;
 
   this._addCars(cars);
 }
@@ -82,6 +83,7 @@ p._addCars = function(cars) {
     var carCoords = getCoordsForCar(i, cars.length);
     var dispCar = this._addCar(cars[i], carCoords.x, carCoords.y);
     this._carSlots.push(dispCar);
+    this._openSlotIdx++;
   }
 };
 
@@ -101,6 +103,8 @@ p._addCar = function(car, x, y) {
 
 p.makeSpaceForCar = function(transitionTime) {
   var newCarNum = this._carSlots.length + 1;
+
+  // Resize if necessary
   var newColumns = getTotalColumns(newCarNum);
   var newRows = getTotalRows(newCarNum);
   if(newColumns !== getTotalColumns(newCarNum - 1) ||
@@ -110,16 +114,42 @@ p.makeSpaceForCar = function(transitionTime) {
                          getTotalHeight(newRows));
   }
 
+  this._rearrangeCars(newCarNum, transitionTime);
+  this._carSlots.push(null);
+  return getCoordsForCar(newCarNum - 1, newCarNum);
+};
+
+p._rearrangeCars = function(numCars, transitionTime) {
   for(var i = 0; i < this._carSlots.length; ++i) {
     var dispCar = this._carSlots[i];
     if(!dispCar) continue;
 
     createjs.Tween.get(dispCar)
-      .to(getCoordsForCar(i, newCarNum), transitionTime);
+      .to(getCoordsForCar(i, numCars), transitionTime, createjs.Ease.cubicOut);
   }
+};
 
-  this._carSlots.push(null);
-  return getCoordsForCar(newCarNum - 1, newCarNum);
+p.putCarInBlankSpace = function(qNewCar) {
+  // I'm going to finish the promise, but I'm thinking
+  // a more "correct" pattern might be to return the promise
+  qNewCar.done(function(newCar) {
+    if(this._openSlotIdx === this._carSlots.length)
+      throw new Error("No open slots in car display");
+
+    if(newCar.parent)
+      newCar.parent.removeChild(newCar);
+
+    this._carSlots[this._openSlotIdx] = newCar;
+
+    var coords = getCoordsForCar(this._openSlotIdx,
+                  this._carSlots.length);
+    newCar.x = coords.x;
+    newCar.y = coords.y;
+    newCar.rotation = 0;
+    this.addChild(newCar);
+
+    ++this._openSlotIdx;
+  }.bind(this));
 };
 
 module.exports = createjs.promote(CarDisplay, "Container");

@@ -31,7 +31,7 @@ $(function() {
         name: "player3",
         player: {
           dcCards: ["","","","",""],
-          cars: ["", "", ""],
+          cars: ["", ""],
           insurances: ["", ""],
         }
       }

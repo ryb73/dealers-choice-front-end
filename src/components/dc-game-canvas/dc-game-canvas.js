@@ -90,16 +90,14 @@ Polymer({
     // coords. The coords will be in relation to the
     // player box; we want them in relation to the decks.
     var carCoords = user.playerBox.makeSpaceForCar(250);
-    debugger;
     carCoords = normalizeCoords(user.playerBox, carCoords);
     carCoords.x += user.playerBox.x;
     carCoords.y += user.playerBox.y;
-    this._textAt({}, "A", carCoords);
     carCoords.x -= decks.x - decks.regX;
     carCoords.y -= decks.y - decks.regY;
 
     var qNewCard = decks.giveCar(carCoords, 250);
-    // user.playerBox.putCarInBlankSpace(qNewCard);
+    user.playerBox.putCarInBlankSpace(qNewCard);
   },
 
   _setup: function() {

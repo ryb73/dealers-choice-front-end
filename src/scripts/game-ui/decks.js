@@ -40,10 +40,9 @@ p.giveCar = function(destCoords, transitionTime) {
 
   var deferred = q.defer();
   createjs.Tween.get(newCar)
-    .to(destCoords, transitionTime)
-    // .call(deferred.resolve)
+    .to(destCoords, transitionTime, createjs.Ease.cubicOut)
     .call(function() {
-      console.log("hiya!");
+      deferred.resolve(newCar);
     });
 
   return deferred.promise;
