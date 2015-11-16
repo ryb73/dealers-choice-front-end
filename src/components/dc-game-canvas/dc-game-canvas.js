@@ -5,6 +5,10 @@
 var stage; // assume only one canvas per page
 var decks;
 
+// Given an object and point relating to that object,
+// returns a set of coords representing the same point with
+// respect to the parent.
+// TODO: refactor out
 function normalizeCoords(dispObj, coords) {
   var focalAngleRad = dispObj.rotation * Math.PI / 180;
   var oppositeRad = (Math.PI - focalAngleRad) / 2;
@@ -17,8 +21,12 @@ function normalizeCoords(dispObj, coords) {
   if(relX < 0) distFromFocal = -distFromFocal;
 
   // Distance between the relative and normalized point
-  var pointDistance = distFromFocal * Math.sin(focalAngleRad) /
-                      Math.sin(oppositeRad);
+  var pointDistance;
+  if(oppositeRad !== 0)
+    pointDistance = distFromFocal * Math.sin(focalAngleRad) /
+                     Math.sin(oppositeRad);
+  else
+    pointDistance =  distFromFocal * 2;
 
   var totalRelativeRad = Math.asin(relY / distFromFocal);
 
@@ -26,9 +34,9 @@ function normalizeCoords(dispObj, coords) {
               totalRelativeRad;
 
   var x = Math.sin(xRad) * pointDistance +
-           coords.x - dispObj.regX;
+           coords.x - dispObj.regX + dispObj.x;
   var y = Math.cos(xRad) * pointDistance +
-           coords.y - dispObj.regY;
+           coords.y - dispObj.regY + dispObj.y;
 
   return {
     x: x,
@@ -91,8 +99,6 @@ Polymer({
     // player box; we want them in relation to the decks.
     var carCoords = user.playerBox.makeSpaceForCar(250);
     carCoords = normalizeCoords(user.playerBox, carCoords);
-    carCoords.x += user.playerBox.x;
-    carCoords.y += user.playerBox.y;
     carCoords.x -= decks.x - decks.regX;
     carCoords.y -= decks.y - decks.regY;
 
@@ -130,7 +136,7 @@ Polymer({
 
     if(!user.playerBox) {
       user.playerBox = new PlayerBox(user, idx === 0);
-      stage.addChild(user.playerBox);
+      stage.addChildAt(user.playerBox, 0);
     }
 
     user.playerBox.setRotation(rotationDeg);
