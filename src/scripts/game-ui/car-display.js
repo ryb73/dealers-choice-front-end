@@ -2,9 +2,9 @@
 /* jshint globalstrict: true */
 "use strict";
 
-var CARD_WIDTH    = 62,
-    CARD_HEIGHT   = 40,
-    VERT_SPACING  = 10,
+var consts = require("./constants");
+
+var VERT_SPACING  = 10,
     HORIZ_SPACING = 10;
 
 function CarDisplay(cars) {
@@ -35,20 +35,21 @@ function getColumnForCar(whichCarIndex, numCars) {
 }
 
 function getRowWidth(numColumns) {
-  return CARD_WIDTH * numColumns +
+  return consts.carWidth * numColumns +
          HORIZ_SPACING * (numColumns - 1);
 }
 
 function getTotalHeight(numRows) {
-  return numRows * CARD_HEIGHT +
+  return numRows * consts.carHeight +
          (numRows - 1) * VERT_SPACING;
 }
 
-function getCoordsForCar(whichCarIndex, numCars) {
+p._getCoordsForCar = function(whichCarIndex, numCars) {
   var column = getColumnForCar(whichCarIndex, numCars);
   var row = getRowForCar(whichCarIndex, numCars);
 
-  var y = (CARD_HEIGHT + VERT_SPACING) * row;
+  var y = (consts.carHeight + VERT_SPACING) * row +
+           consts.carHeight / 2; // reg point is in middle
 
   var totalColumns = getTotalColumns(numCars);
   var rowColumns;
@@ -64,13 +65,19 @@ function getCoordsForCar(whichCarIndex, numCars) {
   var rowWidth = getRowWidth(rowColumns);
   var originX = (getRowWidth(totalColumns) - rowWidth) / 2;
 
-  var x = originX + (CARD_WIDTH + HORIZ_SPACING) * column;
+  var x = originX + (consts.carWidth + HORIZ_SPACING) * column +
+           consts.carWidth / 2;
+
+  var rotation = 0;
+  if(this._rotation >= 90 && this._rotation <= 270)
+    rotation = 180;
 
   return {
     x: x,
-    y: y
+    y: y,
+    rotation: rotation
   };
-}
+};
 
 p._addCars = function(cars) {
   var columns = getTotalColumns(cars.length);
@@ -80,7 +87,7 @@ p._addCars = function(cars) {
                        getTotalHeight(rows));
 
   for(var i = 0; i < cars.length; ++i) {
-    var carCoords = getCoordsForCar(i, cars.length);
+    var carCoords = this._getCoordsForCar(i, cars.length);
     var dispCar = this._addCar(cars[i], carCoords.x, carCoords.y);
     this._carSlots.push(dispCar);
     this._openSlotIdx++;
@@ -92,10 +99,12 @@ p._addCar = function(car, x, y) {
   rect.graphics
     .beginStroke("#000")
     .beginFill("#FABA2F")
-    .drawRect(0, 0, CARD_WIDTH, CARD_HEIGHT);
+    .drawRect(0, 0, consts.carWidth, consts.carHeight);
 
   rect.x = x;
   rect.y = y;
+  rect.regX = consts.carWidth / 2;
+  rect.regY = consts.carHeight / 2;
   this.addChild(rect);
 
   return rect;
@@ -116,16 +125,20 @@ p.makeSpaceForCar = function(transitionTime) {
 
   this._rearrangeCars(newCarNum, transitionTime);
   this._carSlots.push(null);
-  return getCoordsForCar(newCarNum - 1, newCarNum);
+  return this._getCoordsForCar(newCarNum - 1, newCarNum);
 };
 
 p._rearrangeCars = function(numCars, transitionTime) {
+  if(numCars === undefined) numCars = this._carSlots.length;
+  if(transitionTime === undefined) transitionTime = 0;
+
   for(var i = 0; i < this._carSlots.length; ++i) {
     var dispCar = this._carSlots[i];
     if(!dispCar) continue;
 
     createjs.Tween.get(dispCar)
-      .to(getCoordsForCar(i, numCars), transitionTime, createjs.Ease.cubicOut);
+      .to(this._getCoordsForCar(i, numCars),
+           transitionTime, createjs.Ease.cubicOut);
   }
 };
 
@@ -141,7 +154,7 @@ p.putCarInBlankSpace = function(qNewCar) {
 
     this._carSlots[this._openSlotIdx] = newCar;
 
-    var coords = getCoordsForCar(this._openSlotIdx,
+    var coords = this._getCoordsForCar(this._openSlotIdx,
                   this._carSlots.length);
     newCar.x = coords.x;
     newCar.y = coords.y;
@@ -150,6 +163,11 @@ p.putCarInBlankSpace = function(qNewCar) {
 
     ++this._openSlotIdx;
   }.bind(this));
+};
+
+p.setRotation = function(rotation) {
+  this._rotation = rotation;
+  this._rearrangeCars();
 };
 
 module.exports = createjs.promote(CarDisplay, "Container");

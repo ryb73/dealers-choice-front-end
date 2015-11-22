@@ -15,7 +15,8 @@ $(function() {
           dcCards: ["","","","",""],
           cars: [""],
           insurances: ["", ""],
-        }
+        },
+        dispObjs: {}
       },
 
       {
@@ -24,7 +25,8 @@ $(function() {
           dcCards: ["","","","",""],
           cars: [""],
           insurances: ["", ""],
-        }
+        },
+        dispObjs: {}
       },
 
       {
@@ -33,7 +35,8 @@ $(function() {
           dcCards: ["","","","",""],
           cars: ["", ""],
           insurances: ["", ""],
-        }
+        },
+        dispObjs: {}
       }
     ]
   };
@@ -67,7 +70,9 @@ $(function() {
   }
 
   function giveCar(playerIdx) {
-    getCanvas().giveCarFromDeck(playerIdx, "");
+    getCanvas().giveCarFromDeck(playerIdx, {
+      image: "/images/cars/1s.png"
+    });
   }
 
   function setHandSize(playerIdx, n) {
@@ -89,7 +94,7 @@ $(function() {
   }
 
   function removePlayer(n) {
-    getCanvas().removePlayer(n);
+    getCanvas().removePlayerAtIndex(n);
   }
 
   function addPlayer(n) {

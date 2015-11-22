@@ -1,0 +1,108 @@
+<!doctype>
+<html>
+  <head>
+    <script src="../../scripts/easel/easeljs-0.8.1.combined.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+    <style>
+      html, body, dc-game-canvas {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas width="500" height="500"></canvas>
+
+    <script>
+      var canvas = $("canvas")[0];
+      var stage = new createjs.Stage(canvas);
+
+      function normalizeCoords(dispObj, coords) {
+        "use strict";
+        var focalAngleRad = dispObj.rotation * Math.PI / 180;
+        var oppositeRad = (Math.PI - focalAngleRad) / 2;
+
+        // Distance from register point to coords
+        var relX = coords.x - dispObj.regX;
+        var relY = dispObj.regY - coords.y; // opposite of cartesian
+        console.log(relX, relY);
+        var distFromFocal = Math.sqrt(Math.pow(relX, 2) +
+                                      Math.pow(relY, 2));
+        if(relX < 0) distFromFocal = -distFromFocal;
+
+        // Distance between the relative and normalized point
+        var pointDistance = distFromFocal * Math.sin(focalAngleRad) /
+                            Math.sin(oppositeRad);
+
+        var totalRelativeRad = Math.asin(relY / distFromFocal);
+
+        var xRad = (Math.PI / 2) - focalAngleRad - oppositeRad +
+                    totalRelativeRad;
+
+        var x = Math.sin(xRad) * pointDistance + coords.x - dispObj.regX;
+        var y = Math.cos(xRad) * pointDistance + coords.y - dispObj.regY;
+
+        return {
+          x: x,
+          y: y//,
+          // rotation: dispObj.rotation
+        };
+      }
+
+      var con = new createjs.Container();
+      var bg = new createjs.Shape();
+      bg.graphics
+        .beginFill("#000")
+        .drawRect(0, 0, 200, 200);
+      con.addChild(bg);
+
+      var bigSq = new createjs.Shape();
+      bigSq.graphics
+        .beginFill("#0F0")
+        .drawRect(0, 0, 40, 40);
+      bigSq.x = Math.random() * 160;
+      bigSq.y = Math.random() * 160;
+      con.addChild(bigSq);
+
+      // con.rotation = 60;
+      con.x = 200;
+      con.y = 200;
+      con.regX = 100;
+      con.regY = 100;
+      stage.addChild(con);
+
+      var newSq = new createjs.Shape();
+      newSq.graphics
+        .beginFill("#F00")
+        .drawRect(0, 0, 20, 20);
+      stage.addChild(newSq);
+
+      stage.update();
+
+      var sign = 2;
+      createjs.Ticker.setFPS(60);
+      createjs.Ticker.addEventListener("tick", function() {
+        "use strict";
+        con.rotation += sign;
+        // if(Math.abs(con.rotation) > 20) {
+        //   sign = -sign;
+        // }
+
+        var newCoords = normalizeCoords(con, { x: bigSq.x + 10, y: bigSq.y + 10 });
+        newSq.x = newCoords.x + con.x;
+        newSq.y = newCoords.y + con.y;
+        newSq.rotation = con.rotation;
+
+        stage.update();
+      });
+    </script>
+  </body>
+</html>

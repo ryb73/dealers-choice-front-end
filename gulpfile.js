@@ -39,6 +39,7 @@ gulp.task("build html", buildHtml.bind(null, SRC_DIR, BUILD_DEV_DIR, false));
 gulp.task("watch", ["default"], function() {
   gulp.watch(SRC_DIR + "**/*.less", ["build styles"]);
   gulp.watch(SRC_DIR + "**/*.js", ["build scripts"]);
+  gulp.watch(SRC_DIR + "**/*.json", ["build scripts"]);
   gulp.watch(SRC_DIR + "**/*.html", ["build html"]);
 });
 
@@ -46,7 +47,8 @@ function build(buildDir, prodMode) {
   return copyVendor(buildDir)
     .then(buildStyles.bind(null, SRC_DIR, buildDir, prodMode))
     .then(buildScripts.bind(null, SRC_DIR, buildDir, prodMode))
-    .then(buildHtml.bind(null, SRC_DIR, buildDir, prodMode));
+    .then(buildHtml.bind(null, SRC_DIR, buildDir, prodMode))
+    .then(copyImages(buildDir));
 }
 
 function copyVendor(buildDir) {
@@ -68,6 +70,10 @@ function copyVendor(buildDir) {
   ];
 
   return q.all(qCopyJobs);
+}
+
+function copyImages(buildDir) {
+  return doCopy(SRC_DIR + "images/**", buildDir + "images");
 }
 
 function doCopy(src, dest, fileName) {

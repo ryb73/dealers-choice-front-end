@@ -2,7 +2,7 @@
 /* jshint globalstrict: true */
 "use strict";
 
-var BOX_WIDTH         = 400,
+var BOX_WIDTH         = 600,
     BOX_HEIGHT_ME     = 150,
     BOX_HEIGHT_OTHERS = 300;
 
@@ -26,7 +26,7 @@ p._setup = function(user, isMe) {
 
   this._createBackground();
   this._createCars(user.player.cars);
-  this._createDcCards(user.player.dcCards);
+  this._createDcCards(user.player.dcCards, isMe);
   if(!isMe)
     this._createAvatar(user);
 };
@@ -79,6 +79,8 @@ p._createAvatar = function(user) {
 p.setRotation = function(rotationDeg) {
   if(this._avatarDisplay)
     this._avatarDisplay.rotation = -rotationDeg;
+
+  this._carDisplay.setRotation(rotationDeg);
 };
 
 p.makeSpaceForCar = function(transitionTime) {

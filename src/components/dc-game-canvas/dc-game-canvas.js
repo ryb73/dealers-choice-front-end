@@ -38,10 +38,13 @@ function normalizeCoords(dispObj, coords) {
   var y = Math.cos(xRad) * pointDistance +
            coords.y - dispObj.regY + dispObj.y;
 
+  var rotation = coords.rotation || 0;
+  rotation = coords.rotation + dispObj.rotation;
+
   return {
     x: x,
     y: y,
-    rotation: dispObj.rotation
+    rotation: rotation
   };
 }
 
@@ -75,15 +78,16 @@ Polymer({
   },
 
   addPlayer: function(user) {
+    user.dispObjs = user.dispObjs || {};
     this.gameState.users.push(user);
     this.refresh();
   },
 
   removePlayerAtIndex: function(index) {
     var user = this.gameState.users[index];
-    for(var key in user.displayObjects) {
-      if(user.displayObjects.hasOwnProperty(key)) {
-        stage.removeChild(user.displayObjects[key]);
+    for(var key in user.dispObjs) {
+      if(user.dispObjs.hasOwnProperty(key)) {
+        stage.removeChild(user.dispObjs[key]);
       }
     }
 
@@ -97,13 +101,17 @@ Polymer({
     // Make room for the new car and get the new car's
     // coords. The coords will be in relation to the
     // player box; we want them in relation to the decks.
-    var carCoords = user.playerBox.makeSpaceForCar(250);
-    carCoords = normalizeCoords(user.playerBox, carCoords);
+    var playerBox = user.dispObjs.playerBox;
+    var carCoords = playerBox.makeSpaceForCar(2500);
+    carCoords = normalizeCoords(playerBox, carCoords);
     carCoords.x -= decks.x - decks.regX;
     carCoords.y -= decks.y - decks.regY;
 
-    var qNewCard = decks.giveCar(carCoords, 250);
-    user.playerBox.putCarInBlankSpace(qNewCard);
+    if(playerBox.rotation >= 90 && playerBox.rotation <= 270)
+      carCoords.rotation += 180;
+
+    var qNewCard = decks.giveCar(car, carCoords, 2500);
+    playerBox.putCarInBlankSpace(qNewCard);
   },
 
   _setup: function() {
@@ -134,44 +142,46 @@ Polymer({
     var rotationDeg = coords.rotationRad *
                     180 / Math.PI;
 
-    if(!user.playerBox) {
-      user.playerBox = new PlayerBox(user, idx === 0);
-      stage.addChildAt(user.playerBox, 0);
+    var playerBox = user.dispObjs.playerBox;
+    if(!playerBox) {
+      playerBox = user.dispObjs.playerBox =
+        new PlayerBox(user, idx === 0);
+      stage.addChildAt(playerBox, 0);
     }
 
-    user.playerBox.setRotation(rotationDeg);
+    playerBox.setRotation(rotationDeg);
 
-    user.playerBox.x = coords.x;
-    user.playerBox.y = coords.y;
-    user.playerBox.rotation = rotationDeg;
+    playerBox.x = coords.x;
+    playerBox.y = coords.y;
+    playerBox.rotation = rotationDeg;
 
     if(this.debugMode) this._textAt(user, idx, coords);
   },
 
   _textAt: function(user, txt, coords) {
-    if(!user.point) {
-      user.point = new createjs.Shape();
-      user.point.graphics.beginFill("red")
+    if(!user.dispObjs.point) {
+      user.dispObjs.point = new createjs.Shape();
+      user.dispObjs.point.graphics.beginFill("red")
         .drawRect(0, 0, 5, 5);
-      stage.addChild(user.point);
+      stage.addChild(user.dispObjs.point);
 
-      user.pointLabel = new createjs.Text(txt, "16px Arial", "#000");
-      stage.addChild(user.pointLabel);
+      user.dispObjs.pointLabel = new createjs.Text(txt, "16px Arial", "#000");
+      stage.addChild(user.dispObjs.pointLabel);
     }
 
-    user.point.x = coords.x - 2;
-    user.point.y = coords.y - 2;
+    user.dispObjs.point.x = coords.x - 2;
+    user.dispObjs.point.y = coords.y - 2;
 
-    user.pointLabel.x = coords.x;
-    user.pointLabel.y = coords.y;
+    user.dispObjs.pointLabel.x = coords.x;
+    user.dispObjs.pointLabel.y = coords.y;
   },
 
   _getCoordsForPlayer: function(playerIndex) {
     var origin = {
       x: this._width() / 2,
-      y: this._height() / 2
+      y: this._height() / 2 + 25
     };
-    var radius = (this._height() * 0.7) / 2;
+    var radius = (this._height() * 0.65) / 2;
 
     var anglePerPlayer =
       2 * Math.PI / this.gameState.users.length;

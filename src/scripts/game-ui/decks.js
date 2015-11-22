@@ -2,10 +2,11 @@
 /* jshint globalstrict: true */
 "use strict";
 
-var q = require("q");
+var q      = require("q"),
+    consts = require("./constants");
 
-var DECK_WIDTH   = 62,
-    DECK_HEIGHT  = 40,
+var DECK_WIDTH   = 93,
+    DECK_HEIGHT  = 60,
     DECK_SPACING = 5;
 
 function Decks() {
@@ -23,49 +24,67 @@ p.setup = function() {
   this.regY = totalHeight / 2; // I think this is sort of an anti-pattern but am not terribly concerned right now
 
   var carDeck = createCarCard();
+  carDeck.y = DECK_HEIGHT / 2;
   this.addChild(carDeck);
 
   var dcDeck = createDcCard();
-  dcDeck.y = DECK_HEIGHT + DECK_SPACING;
+  dcDeck.y = DECK_HEIGHT / 2 + DECK_HEIGHT + DECK_SPACING;
   this.addChild(dcDeck);
 
   var insuranceDeck = createInsuranceCard();
-  insuranceDeck.y = 2 * (DECK_HEIGHT + DECK_SPACING);
+  insuranceDeck.y = DECK_HEIGHT / 2 +
+                    2 * (DECK_HEIGHT + DECK_SPACING);
   this.addChild(insuranceDeck);
 };
 
-p.giveCar = function(destCoords, transitionTime) {
-  var newCar = createCarCard();
-  this.addChild(newCar);
+p.giveCar = function(car, destCoords, transitionTime) {
+  var newCard = createCarCard(car);
+  this.addChild(newCard);
 
   var deferred = q.defer();
-  createjs.Tween.get(newCar)
+  createjs.Tween.get(newCard)
     .to(destCoords, transitionTime, createjs.Ease.cubicOut)
     .call(function() {
-      deferred.resolve(newCar);
+      deferred.resolve(newCard);
     });
 
   return deferred.promise;
 };
 
-function createCarCard() {
-  return createCard("#FABA2F");
+function createCarCard(car) {
+  if(!car || !car.image)
+    return createGenericCard("#FABA2F");
+
+  var bmp = new createjs.Bitmap(car.image);
+  // TODO: preload images so that this can work reliably
+  var bmpBounds = bmp.getBounds();
+  var scaleX = consts.carWidth / bmpBounds.width;
+  var scaleY = consts.carHeight / bmpBounds.height;
+  bmp.setTransform(0, 0, scaleX, scaleY);
+
+  bmp.regX = (consts.carWidth / 2) / scaleX;
+  bmp.regY = (consts.carHeight / 2) / scaleY;
+  bmp.x = bmp.regX;
+  return bmp;
 }
 
 function createDcCard() {
-  return createCard("#AA0099");
+  return createGenericCard("#AA0099");
 }
 
 function createInsuranceCard() {
-  return createCard("#22FF77");
+  return createGenericCard("#22FF77");
 }
 
-function createCard(color) {
+function createGenericCard(color) {
   var shape = new createjs.Shape();
   shape.graphics
     .beginStroke("#000")
     .beginFill(color)
     .drawRect(0, 0, DECK_WIDTH, DECK_HEIGHT);
+  shape.regX = DECK_WIDTH / 2;
+  shape.regY = DECK_HEIGHT / 2;
+  shape.x = shape.regX;
   return shape;
 }
 
