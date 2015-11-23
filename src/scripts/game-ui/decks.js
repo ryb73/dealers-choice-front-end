@@ -2,8 +2,9 @@
 /* jshint globalstrict: true */
 "use strict";
 
-var q      = require("q"),
-    consts = require("./constants");
+var q          = require("q"),
+    consts     = require("./constants"),
+    CarDisplay = require("./cards/car-display");
 
 var DECK_WIDTH   = 93,
     DECK_HEIGHT  = 60,
@@ -12,12 +13,12 @@ var DECK_WIDTH   = 93,
 function Decks() {
   this.Container_constructor();
 
-  this.setup();
+  this._setup();
 }
 
 var p = createjs.extend(Decks, createjs.Container);
 
-p.setup = function() {
+p._setup = function() {
   var totalHeight = DECK_HEIGHT * 3 + DECK_SPACING * 2;
   this.setBounds(0, 0, DECK_WIDTH, totalHeight);
   this.regX = 0;
@@ -39,6 +40,7 @@ p.setup = function() {
 
 p.giveCar = function(car, destCoords, transitionTime) {
   var newCard = createCarCard(car);
+  newCard.flip(transitionTime / 4);
   this.addChild(newCard);
 
   var deferred = q.defer();
@@ -54,25 +56,12 @@ p.giveCar = function(car, destCoords, transitionTime) {
 // car: Optional reference to car. If omitted, creates
 //      a blank car
 function createCarCard(car) {
-  var image;
-  if(car && car.image) {
-    image = car.image;
-  } else {
-    image = "/images/cars/blank.png";
-  }
-
-  var bmp = new createjs.Bitmap(image);
-  // TODO: preload images so that this can work reliably
-  var bmpBounds = bmp.getBounds();
-  var scaleX = consts.carWidth / bmpBounds.width;
-  var scaleY = consts.carHeight / bmpBounds.height;
-  bmp.setTransform(0, 0, scaleX, scaleY);
-
-  bmp.regX = (consts.carWidth / 2) / scaleX;
-  bmp.regY = (consts.carHeight / 2) / scaleY;
-  bmp.x = bmp.regX;
-  bmp.shadow = new createjs.Shadow("#807E73", 2, 2, 5);
-  return bmp;
+  var carDisplay = new CarDisplay(car);
+  var bounds = carDisplay.getBounds();
+  carDisplay.regX = bounds.width / 2;
+  carDisplay.regY = bounds.height / 2;
+  carDisplay.x = carDisplay.regX;
+  return carDisplay;
 }
 
 function createDcCard() {

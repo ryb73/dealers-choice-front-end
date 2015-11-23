@@ -40,6 +40,7 @@ function normalizeCoords(dispObj, coords) {
 
   var rotation = coords.rotation || 0;
   rotation = coords.rotation + dispObj.rotation;
+  console.log(rotation);
 
   return {
     x: x,
@@ -102,7 +103,7 @@ Polymer({
     // coords. The coords will be in relation to the
     // player box; we want them in relation to the decks.
     var playerBox = user.dispObjs.playerBox;
-    var carCoords = playerBox.makeSpaceForCar(2500);
+    var carCoords = playerBox.makeSpaceForCar(5000);
     carCoords = normalizeCoords(playerBox, carCoords);
     carCoords.x -= decks.x - decks.regX;
     carCoords.y -= decks.y - decks.regY;
@@ -110,7 +111,7 @@ Polymer({
     if(playerBox.rotation >= 90 && playerBox.rotation <= 270)
       carCoords.rotation += 180;
 
-    var qNewCard = decks.giveCar(car, carCoords, 2500);
+    var qNewCard = decks.giveCar(car, carCoords, 5000);
     playerBox.putCarInBlankSpace(qNewCard);
   },
 
