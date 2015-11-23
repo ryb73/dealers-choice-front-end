@@ -2,7 +2,7 @@
 /* jshint globalstrict: true */
 "use strict";
 
-var constants = require("./constants");
+var constants = require("../constants");
 
 function PlayerDcCards(availWidth, cards, isMe) {
   this.Container_constructor();

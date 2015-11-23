@@ -2,7 +2,7 @@
 /* jshint globalstrict: true */
 "use strict";
 
-var consts = require("./constants");
+var consts = require("../constants");
 
 var VERT_SPACING  = 10,
     HORIZ_SPACING = 10;
