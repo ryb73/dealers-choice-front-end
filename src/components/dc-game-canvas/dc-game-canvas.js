@@ -115,9 +115,15 @@ Polymer({
   },
 
   _setup: function() {
+    this._createBackground();
     this._createPlayers();
     this._createDecks();
     stage.update();
+  },
+
+  _createBackground: function() {
+    var bgBmp = new createjs.Bitmap("/images/game-bg.png");
+    stage.addChildAt(bgBmp, 0);
   },
 
   _createPlayers: function() {
@@ -145,7 +151,7 @@ Polymer({
     var playerBox = user.dispObjs.playerBox;
     if(!playerBox) {
       playerBox = user.dispObjs.playerBox =
-        new PlayerBox(user, idx === 0);
+        new PlayerBox(user, idx === 0, this.debugMode);
       stage.addChildAt(playerBox, 0);
     }
 

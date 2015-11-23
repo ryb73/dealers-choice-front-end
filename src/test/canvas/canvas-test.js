@@ -6,7 +6,7 @@ $(function() {
   "use strict";
 
   var canvas = document.createElement("dc-game-canvas");
-  canvas.debugMode = true;
+  // canvas.debugMode = true;
   canvas.gameState = {
     users: [
       {

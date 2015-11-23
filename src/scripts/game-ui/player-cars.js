@@ -7,7 +7,7 @@ var consts = require("./constants");
 var VERT_SPACING  = 10,
     HORIZ_SPACING = 10;
 
-function CarDisplay(cars) {
+function PlayerCars(cars) {
   this.Container_constructor();
 
   this._carSlots = [];
@@ -16,7 +16,7 @@ function CarDisplay(cars) {
   this._addCars(cars);
 }
 
-var p = createjs.extend(CarDisplay, createjs.Container);
+var p = createjs.extend(PlayerCars, createjs.Container);
 
 function getTotalColumns(numCars) {
   return Math.ceil(Math.sqrt(numCars));
@@ -170,4 +170,4 @@ p.setRotation = function(rotation) {
   this._rearrangeCars();
 };
 
-module.exports = createjs.promote(CarDisplay, "Container");
+module.exports = createjs.promote(PlayerCars, "Container");

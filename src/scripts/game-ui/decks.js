@@ -51,11 +51,17 @@ p.giveCar = function(car, destCoords, transitionTime) {
   return deferred.promise;
 };
 
+// car: Optional reference to car. If omitted, creates
+//      a blank car
 function createCarCard(car) {
-  if(!car || !car.image)
-    return createGenericCard("#FABA2F");
+  var image;
+  if(car && car.image) {
+    image = car.image;
+  } else {
+    image = "/images/cars/blank.png";
+  }
 
-  var bmp = new createjs.Bitmap(car.image);
+  var bmp = new createjs.Bitmap(image);
   // TODO: preload images so that this can work reliably
   var bmpBounds = bmp.getBounds();
   var scaleX = consts.carWidth / bmpBounds.width;
@@ -65,6 +71,7 @@ function createCarCard(car) {
   bmp.regX = (consts.carWidth / 2) / scaleX;
   bmp.regY = (consts.carHeight / 2) / scaleY;
   bmp.x = bmp.regX;
+  bmp.shadow = new createjs.Shadow("#807E73", 2, 2, 5);
   return bmp;
 }
 

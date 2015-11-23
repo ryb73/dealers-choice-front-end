@@ -4,14 +4,14 @@
 
 var constants = require("./constants");
 
-function DcCardDisplay(availWidth, cards, isMe) {
+function PlayerDcCards(availWidth, cards, isMe) {
   this.Container_constructor();
 
   this.setBounds(0, 0, availWidth, constants.dcCardHeight);
   this.addCards(availWidth, cards, isMe);
 }
 
-var p = createjs.extend(DcCardDisplay, createjs.Container);
+var p = createjs.extend(PlayerDcCards, createjs.Container);
 
 p.addCards = function(availWidth, cards, isMe) {
   var cardsShape;
@@ -44,4 +44,4 @@ p.addCards = function(availWidth, cards, isMe) {
   }.bind(this));
 };
 
-module.exports = createjs.promote(DcCardDisplay, "Container");
+module.exports = createjs.promote(PlayerDcCards, "Container");
