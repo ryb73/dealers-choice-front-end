@@ -158,7 +158,7 @@ p.putCarInBlankSpace = function(qNewCar) {
                   this._carSlots.length);
     newCar.x = coords.x;
     newCar.y = coords.y;
-    newCar.rotation = 0;
+    newCar.rotation = coords.rotation;
     this.addChild(newCar);
 
     ++this._openSlotIdx;

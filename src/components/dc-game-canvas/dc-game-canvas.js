@@ -103,15 +103,12 @@ Polymer({
     // coords. The coords will be in relation to the
     // player box; we want them in relation to the decks.
     var playerBox = user.dispObjs.playerBox;
-    var carCoords = playerBox.makeSpaceForCar(5000);
+    var carCoords = playerBox.makeSpaceForCar(500);
     carCoords = normalizeCoords(playerBox, carCoords);
     carCoords.x -= decks.x - decks.regX;
     carCoords.y -= decks.y - decks.regY;
 
-    if(playerBox.rotation >= 90 && playerBox.rotation <= 270)
-      carCoords.rotation += 180;
-
-    var qNewCard = decks.giveCar(car, carCoords, 5000);
+    var qNewCard = decks.giveCar(car, carCoords, 500);
     playerBox.putCarInBlankSpace(qNewCard);
   },
 
