@@ -66,7 +66,10 @@ function copyVendor(buildDir) {
            buildDir + "scripts/easel"),
 
     doCopy([BOWER_DIR + "TweenJS/lib/**.js"],
-           buildDir + "scripts/tween")
+           buildDir + "scripts/tween"),
+
+    doCopy([BOWER_DIR + "PreloadJS/lib/**.js"],
+           buildDir + "scripts/preload")
   ];
 
   return q.all(qCopyJobs);

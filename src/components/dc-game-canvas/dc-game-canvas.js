@@ -1,6 +1,8 @@
-/* global Polymer, createjs, $, Decks, PlayerBox */
+/* global Polymer, createjs, $, Decks, PlayerBox, assets */
 /* jshint globalstrict: true */
 "use strict";
+
+var q = require("q");
 
 var stage; // assume only one canvas per page
 var decks;
@@ -114,9 +116,34 @@ Polymer({
 
   _setup: function() {
     this._createBackground();
-    this._createPlayers();
-    this._createDecks();
-    stage.update();
+
+    this._loadAssets()
+      .done(function() {
+        this._createPlayers();
+        this._createDecks();
+        stage.update();
+      }.bind(this));
+  },
+
+  _loadAssets: function() {
+    var deferred = q.defer();
+
+    assets.on("error", function(event) {
+      console.log("error loading", event);
+      deferred.reject();
+    });
+
+    assets.on("progress", function() {
+      console.log("progress", assets.progress);
+    });
+
+    assets.on("complete", function() {
+      console.log("completed loading");
+      deferred.resolve();
+    });
+    assets.load();
+
+    return deferred.promise;
   },
 
   _createBackground: function() {

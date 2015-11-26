@@ -3,3 +3,4 @@
 
 window.PlayerBox = require("./player-box");
 window.Decks = require("./decks");
+window.assets = require("./assets");
