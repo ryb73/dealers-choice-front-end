@@ -61,11 +61,12 @@ var assetTable = {
 function Assets() {
   var self = this;
   var emitter = new Evemit();
+  var queue;
   var totalFiles = 0;
   var filesLoaded = 0;
 
   function load() {
-    var queue = new createjs.LoadQueue();
+    queue = new createjs.LoadQueue();
     queue.on("fileload", fileLoaded);
     queue.on("complete", loadComplete);
     queue.on("error", loadError);
@@ -79,7 +80,13 @@ function Assets() {
   }
   this.load = load;
 
+  function isLoading() {
+    return totalFiles > 0;
+  }
+
   function fileLoaded(event) {
+    if(!isLoading()) return;
+
     self[event.item.src] = event.result;
     ++filesLoaded;
 
@@ -87,11 +94,16 @@ function Assets() {
   }
 
   function loadComplete() {
-    emitter.emit("progress");
-    emitter.emit("complete");
+    if(isLoading()) {
+      emitter.emit("progress");
+      emitter.emit("complete");
+    }
   }
 
   function loadError(event) {
+    queue.removeAll();
+    totalFiles = 0;
+    filesLoaded = 0;
     emitter.emit("error", event);
   }
 

@@ -1,4 +1,5 @@
-/* global Polymer, createjs, $, Decks, PlayerBox, assets */
+/* global Polymer, createjs, $, Decks, PlayerBox,
+          assets, LoadingSplash */
 /* jshint globalstrict: true */
 "use strict";
 
@@ -59,6 +60,7 @@ Polymer({
       value: null
     },
 
+    loaded: Boolean,
     debugMode: Boolean
   },
 
@@ -76,8 +78,10 @@ Polymer({
   },
 
   refresh: function() {
-    this._refreshPlayers();
-    stage.update();
+    if(this.loaded) {
+      this._refreshPlayers();
+      stage.update();
+    }
   },
 
   addPlayer: function(user) {
@@ -119,6 +123,8 @@ Polymer({
 
     this._loadAssets()
       .done(function() {
+        this.loaded = true;
+
         this._createPlayers();
         this._createDecks();
         stage.update();
@@ -126,24 +132,16 @@ Polymer({
   },
 
   _loadAssets: function() {
-    var deferred = q.defer();
+    var loadingSplash = new LoadingSplash();
+    loadingSplash.x = this._width() / 2;
+    loadingSplash.y = this._height() / 2;
+    stage.addChild(loadingSplash);
+    stage.update();
 
-    assets.on("error", function(event) {
-      console.log("error loading", event);
-      deferred.reject();
-    });
-
-    assets.on("progress", function() {
-      console.log("progress", assets.progress);
-    });
-
-    assets.on("complete", function() {
-      console.log("completed loading");
-      deferred.resolve();
-    });
-    assets.load();
-
-    return deferred.promise;
+    return loadingSplash.load()
+      .tap(function() {
+        stage.removeChild(loadingSplash);
+      });
   },
 
   _createBackground: function() {
