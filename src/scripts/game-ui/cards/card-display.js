@@ -22,7 +22,7 @@ function createBmp(url) {
   return bmp;
 }
 
-// Only support back to front
+// Only support back to front for now
 p.flip = function(delay) {
   createjs.Tween.get(this._backBmp)
     .to({ scaleX: 0, x: this._backBmp.regX }, delay / 2)

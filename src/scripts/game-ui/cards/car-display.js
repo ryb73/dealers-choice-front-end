@@ -4,7 +4,7 @@
 
 var CardDisplay = require("./card-display");
 
-var BACK_URL = "/images/cars/blank.png";
+var BACK_URL = "/images/cars/back.png";
 
 function CarDisplay(car) {
   var frontUrl;

@@ -2,9 +2,10 @@
 /* jshint globalstrict: true */
 "use strict";
 
-var q          = require("q"),
-    consts     = require("./constants"),
-    CarDisplay = require("./cards/car-display");
+var q             = require("q"),
+    consts        = require("./constants"),
+    CarDisplay    = require("./cards/car-display"),
+    DcCardDisplay = require("./cards/dc-card-display");
 
 var DECK_WIDTH   = 93,
     DECK_HEIGHT  = 60,
@@ -65,7 +66,16 @@ function createCarCard(car) {
 }
 
 function createDcCard() {
-  return createGenericCard("#AA0099");
+  var dcCardDisplay = new DcCardDisplay();
+  var bounds = dcCardDisplay.getBounds();
+  dcCardDisplay.regX = bounds.width / 2;
+  dcCardDisplay.regY = bounds.height / 2;
+  dcCardDisplay.rotation = -90;
+
+  // regY because it's rotated
+  dcCardDisplay.x = dcCardDisplay.regY;
+
+  return dcCardDisplay;
 }
 
 function createInsuranceCard() {
