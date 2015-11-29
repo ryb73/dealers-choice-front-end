@@ -2,22 +2,22 @@
 /* jshint globalstrict: true */
 "use strict";
 
-function CardDisplay(backUrl, frontUrl) {
+function CardDisplay(backImage, frontImage) {
   this.Container_constructor();
 
-  this._backBmp = createBmp(backUrl);
+  this._backBmp = createBmp(backImage);
   var bounds = this._backBmp.getBounds();
   this.setBounds(0, 0, bounds.width, bounds.height);
   this.addChild(this._backBmp);
 
-  if(frontUrl)
-    this._frontBmp = createBmp(frontUrl);
+  if(frontImage)
+    this._frontBmp = createBmp(frontImage);
 }
 
 var p = createjs.extend(CardDisplay, createjs.Container);
 
-function createBmp(url) {
-  var bmp = new createjs.Bitmap(url);
+function createBmp(image) {
+  var bmp = new createjs.Bitmap(image);
   bmp.shadow = new createjs.Shadow("#807E73", 2, 2, 5);
   return bmp;
 }

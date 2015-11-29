@@ -2,16 +2,15 @@
 /* jshint globalstrict: true */
 "use strict";
 
-var CardDisplay = require("./card-display");
-
-var BACK_URL = "/images/cars/back.png";
+var CardDisplay = require("./card-display"),
+    assets      = require("../assets");
 
 function CarDisplay(car) {
-  var frontUrl;
+  var frontImgId;
   if(car && car.image)
-    frontUrl = car.image;
+    frontImgId = car.image;
 
-  this.CardDisplay_constructor(BACK_URL, frontUrl);
+  this.CardDisplay_constructor(assets.carBack, assets[frontImgId]);
 }
 
 createjs.extend(CarDisplay, CardDisplay);

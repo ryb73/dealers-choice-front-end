@@ -105,7 +105,17 @@ function getCoordsForCars(playerCars) {
 }
 
 p.putCarInBlankSpace = function(qNewCar) {
-  this._playerCars.putCarInBlankSpace(qNewCar);
+  return this._playerCars.putCarInBlankSpace(qNewCar);
+};
+
+p.makeSpaceForDcCard = function(transitionTime) {
+  var coords = this._playerDcCards.makeSpaceForCard(transitionTime);
+  coords.y += this._playerDcCards.y;
+  return coords;
+};
+
+p.putDcCardInBlankSpace = function(qNewCard) {
+  return this._playerDcCards.putCardInBlankSpace(qNewCard);
 };
 
 module.exports = createjs.promote(PlayerBox, "Container");

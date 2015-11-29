@@ -68,6 +68,9 @@ p._getCoordsForCar = function(whichCarIndex, numCars) {
   var x = originX + (consts.carWidth + HORIZ_SPACING) * column +
            consts.carWidth / 2;
 
+  // Rotate so that the user can see the car. While this isn't
+  // really how players would lay out their cars in the real
+  // world, it makes it easier for the current player
   var rotation = 0;
   if(this._rotation >= 90 && this._rotation <= 270)
     rotation = 180;
@@ -123,14 +126,15 @@ p.makeSpaceForCar = function(transitionTime) {
                          getTotalHeight(newRows));
   }
 
-  this._rearrangeCars(newCarNum, transitionTime);
   this._carSlots.push(null);
+  this._rearrangeCars(transitionTime);
   return this._getCoordsForCar(newCarNum - 1, newCarNum);
 };
 
-p._rearrangeCars = function(numCars, transitionTime) {
-  if(numCars === undefined) numCars = this._carSlots.length;
+p._rearrangeCars = function(transitionTime) {
   if(transitionTime === undefined) transitionTime = 0;
+
+  var numCars = this._carSlots.length;
 
   for(var i = 0; i < this._carSlots.length; ++i) {
     var dispCar = this._carSlots[i];
@@ -143,9 +147,7 @@ p._rearrangeCars = function(numCars, transitionTime) {
 };
 
 p.putCarInBlankSpace = function(qNewCar) {
-  // I'm going to finish the promise, but I'm thinking
-  // a more "correct" pattern might be to return the promise
-  qNewCar.done(function(newCar) {
+  return qNewCar.then(function(newCar) {
     if(this._openSlotIdx === this._carSlots.length)
       throw new Error("No open slots in car display");
 

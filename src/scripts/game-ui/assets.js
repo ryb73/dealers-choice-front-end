@@ -8,7 +8,7 @@ var assetTable = {
   "/images/dc-cards/back.png" : "dcCardBack",
 
   "/images/cars/back.png" : "carBack",
-  "/images/cars/122.png" : "car1",
+  "/images/cars/1.png" : "car1",
   "/images/cars/1s.png" : "car1s",
   "/images/cars/2.png" : "car2",
   "/images/cars/2s.png" : "car2s",
@@ -87,7 +87,8 @@ function Assets() {
   function fileLoaded(event) {
     if(!isLoading()) return;
 
-    self[event.item.src] = event.result;
+    var id = assetTable[event.item.src];
+    self[id] = event.result;
     ++filesLoaded;
 
     emitter.emit("progress");

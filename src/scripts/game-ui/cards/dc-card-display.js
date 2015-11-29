@@ -2,12 +2,11 @@
 /* jshint globalstrict: true */
 "use strict";
 
-var CardDisplay = require("./card-display");
-
-var BACK_URL = "/images/dc-cards/back.png";
+var CardDisplay = require("./card-display"),
+    assets      = require("../assets");
 
 function DcCardDisplay() {
-  this.CardDisplay_constructor(BACK_URL);
+  this.CardDisplay_constructor(assets.dcCardBack);
 }
 
 createjs.extend(DcCardDisplay, CardDisplay);

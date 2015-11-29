@@ -3,15 +3,18 @@
 /* jshint globalstrict: true */
 "use strict";
 
-var q = require("q");
+var q                  = require("q"),
+    AnimationThrottler = require("./animation-throttler");
 
 var stage; // assume only one canvas per page
 var decks;
+var animationThrottler = new AnimationThrottler();
 
 // Given an object and point relating to that object,
 // returns a set of coords representing the same point with
 // respect to the parent.
 // TODO: refactor out
+// TODO: provide more explanation, visuals?
 function normalizeCoords(dispObj, coords) {
   var focalAngleRad = dispObj.rotation * Math.PI / 180;
   var oppositeRad = (Math.PI - focalAngleRad) / 2;
@@ -42,8 +45,7 @@ function normalizeCoords(dispObj, coords) {
            coords.y - dispObj.regY + dispObj.y;
 
   var rotation = coords.rotation || 0;
-  rotation = coords.rotation + dispObj.rotation;
-  console.log(rotation);
+  rotation = rotation + dispObj.rotation;
 
   return {
     x: x,
@@ -79,6 +81,7 @@ Polymer({
 
   refresh: function() {
     if(this.loaded) {
+      this._refreshDeck();
       this._refreshPlayers();
       stage.update();
     }
@@ -103,6 +106,12 @@ Polymer({
   },
 
   giveCarFromDeck: function(userIdx, car) {
+    animationThrottler.requestAnim(
+      this._gcfdImpl.bind(this, userIdx, car)
+    );
+  },
+
+  _gcfdImpl: function(userIdx, car) {
     var user = this.gameState.users[userIdx];
 
     // Make room for the new car and get the new car's
@@ -115,13 +124,38 @@ Polymer({
     carCoords.y -= decks.y - decks.regY;
 
     var qNewCard = decks.giveCar(car, carCoords, 500);
-    playerBox.putCarInBlankSpace(qNewCard);
+    return playerBox.putCarInBlankSpace(qNewCard);
+  },
+
+  giveDcCardFromDeck: function(userIdx, dcCard) {
+    // this._gdcfdImpl(userIdx, dcCard);
+    animationThrottler.requestAnim(
+      this._gdcfdImpl.bind(this, userIdx, dcCard)
+    );
+  },
+
+  //TODO: this looks very similar to giveCarFromDeck. refactor?
+  _gdcfdImpl: function(userIdx, dcCard) {
+    var user = this.gameState.users[userIdx];
+
+    // Make room for the new card
+    var playerBox = user.dispObjs.playerBox;
+    var cardCoords = playerBox.makeSpaceForDcCard(500);
+    cardCoords = normalizeCoords(playerBox, cardCoords);
+    cardCoords.x -= decks.x - decks.regX;
+    cardCoords.y -= decks.y - decks.regY;
+
+    var qNewCard = decks.giveDcCard(dcCard, cardCoords, 500);
+    return playerBox.putDcCardInBlankSpace(qNewCard);
   },
 
   _setup: function() {
     this._createBackground();
 
     this._loadAssets()
+      // .catch(function() {
+        //TODO: log error
+      // })
       .done(function() {
         this.loaded = true;
 
@@ -155,9 +189,13 @@ Polymer({
 
   _createDecks: function() {
     decks = new Decks();
+    this._refreshDeck();
+    stage.addChild(decks);
+  },
+
+  _refreshDeck: function() {
     decks.x = 5;
     decks.y = this._height() / 2;
-    stage.addChild(decks);
   },
 
   _refreshPlayers: function() {
@@ -175,7 +213,7 @@ Polymer({
     if(!playerBox) {
       playerBox = user.dispObjs.playerBox =
         new PlayerBox(user, idx === 0, this.debugMode);
-      stage.addChildAt(playerBox, 0);
+      stage.addChildAt(playerBox, 1);
     }
 
     playerBox.setRotation(rotationDeg);

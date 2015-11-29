@@ -3,13 +3,15 @@
 "use strict";
 
 var q             = require("q"),
+    _             = require("lodash"),
     consts        = require("./constants"),
     CarDisplay    = require("./cards/car-display"),
     DcCardDisplay = require("./cards/dc-card-display");
 
 var DECK_WIDTH   = 93,
     DECK_HEIGHT  = 60,
-    DECK_SPACING = 5;
+    DECK_SPACING = 5,
+    DC_CARD_Y    = DECK_HEIGHT / 2 + DECK_HEIGHT + DECK_SPACING;
 
 function Decks() {
   this.Container_constructor();
@@ -30,7 +32,7 @@ p._setup = function() {
   this.addChild(carDeck);
 
   var dcDeck = createDcCard();
-  dcDeck.y = DECK_HEIGHT / 2 + DECK_HEIGHT + DECK_SPACING;
+  dcDeck.y = DC_CARD_Y;
   this.addChild(dcDeck);
 
   var insuranceDeck = createInsuranceCard();
@@ -42,6 +44,22 @@ p._setup = function() {
 p.giveCar = function(car, destCoords, transitionTime) {
   var newCard = createCarCard(car);
   newCard.flip(transitionTime / 4);
+  this.addChild(newCard);
+
+  var deferred = q.defer();
+  createjs.Tween.get(newCard)
+    .to(destCoords, transitionTime, createjs.Ease.cubicOut)
+    .call(function() {
+      deferred.resolve(newCard);
+    });
+
+  return deferred.promise;
+};
+
+p.giveDcCard = function(car, destCoords, transitionTime) {
+  var newCard = createDcCard(car);
+  // newCard.flip(transitionTime / 4);
+  newCard.y = DC_CARD_Y;
   this.addChild(newCard);
 
   var deferred = q.defer();

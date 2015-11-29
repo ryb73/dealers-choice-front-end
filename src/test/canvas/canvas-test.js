@@ -1,9 +1,13 @@
-var $ = window.$ = require("jquery");
+var $ = window.$ = require("jquery"),
+    _ = require("lodash");
 require("webcomponents-lite");
 require("../../scripts/game-ui");
 
 $(function() {
   "use strict";
+
+  var availCars = [];
+  shuffleCars();
 
   var canvas = document.createElement("dc-game-canvas");
   // canvas.debugMode = true;
@@ -12,9 +16,9 @@ $(function() {
       {
         name: "player1",
         player: {
-          dcCards: ["","","","",""],
-          cars: [""],
-          insurances: ["", ""],
+          dcCards: [],
+          cars: [],
+          insurances: [],
         },
         dispObjs: {}
       },
@@ -22,9 +26,9 @@ $(function() {
       {
         name: "player2",
         player: {
-          dcCards: ["","","","",""],
-          cars: [""],
-          insurances: ["", ""],
+          dcCards: [],
+          cars: [],
+          insurances: [],
         },
         dispObjs: {}
       },
@@ -32,9 +36,9 @@ $(function() {
       {
         name: "player3",
         player: {
-          dcCards: ["","","","",""],
-          cars: ["", ""],
-          insurances: ["", ""],
+          dcCards: [],
+          cars: [],
+          insurances: [],
         },
         dispObjs: {}
       }
@@ -63,16 +67,44 @@ $(function() {
       setNumCars(args[1], args[2]);
     } else if(args[0] === "gc") {
       giveCar(args[1]);
+    } else if(args[0] === "nd") {
+      newDeal();
+    } else if(args[0] === "gdc") {
+      giveDcCard(args[1]);
     } else {
       alert("illegal command: " + args[0]);
       return;
     }
   }
 
+  function newDeal() {
+    var canvas = getCanvas();
+    var numPlayers = canvas.gameState.users.length;
+
+    var i;
+    for(i = 0; i < numPlayers * 5; ++i) {
+      canvas.giveDcCardFromDeck(i % numPlayers, "");
+    }
+
+    for(i = 0; i < numPlayers * 4; ++i) {
+      canvas.giveCarFromDeck(i % numPlayers, availCars.pop());
+    }
+  }
+
+  function shuffleCars() {
+    for(var i = 1; i <= 24; ++i) {
+      availCars.push({ image: "car" + i + "s" });
+    }
+
+    availCars = _.shuffle(availCars);
+  }
+
   function giveCar(playerIdx) {
-    getCanvas().giveCarFromDeck(playerIdx, {
-      image: "/images/cars/1s.png"
-    });
+    getCanvas().giveCarFromDeck(playerIdx, availCars.pop());
+  }
+
+  function giveDcCard(playerIdx) {
+    getCanvas().giveDcCardFromDeck(playerIdx, "");
   }
 
   function setHandSize(playerIdx, n) {
