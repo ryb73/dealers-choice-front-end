@@ -4,8 +4,6 @@
 /* jshint globalstrict: true */
 "use strict";
 
-var constants = require("../constants");
-
 function PlayerHand(cardsData) {
   this.Container_constructor();
 
@@ -37,7 +35,7 @@ p._rearrangeCards = function(transitionTime) {
     var dispCard = this._cardSlots[i];
     if(!dispCard) continue;
 
-    createjs.Tween.get(dispCard)
+    createjs.Tween.get(dispCard, { override: true })
       .to(this._getCoordsForCard(i), transitionTime,
         createjs.Ease.cubicOut);
   }

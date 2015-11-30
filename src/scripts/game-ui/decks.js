@@ -2,11 +2,12 @@
 /* jshint globalstrict: true */
 "use strict";
 
-var q             = require("q"),
-    _             = require("lodash"),
-    consts        = require("./constants"),
-    CarDisplay    = require("./cards/car-display"),
-    DcCardDisplay = require("./cards/dc-card-display");
+var q                = require("q"),
+    _                = require("lodash"),
+    consts           = require("./constants"),
+    CarDisplay       = require("./cards/car-display"),
+    DcCardDisplay    = require("./cards/dc-card-display"),
+    InsuranceDisplay = require("./cards/insurance-display");
 
 var DECK_WIDTH   = 93,
     DECK_HEIGHT  = 60,
@@ -56,8 +57,8 @@ p.giveCar = function(car, destCoords, transitionTime) {
   return deferred.promise;
 };
 
-p.giveDcCard = function(car, destCoords, transitionTime) {
-  var newCard = createDcCard(car);
+p.giveDcCard = function(dcCard, destCoords, transitionTime) {
+  var newCard = createDcCard(dcCard);
   // newCard.flip(transitionTime / 4);
   newCard.y = DC_CARD_Y;
   this.addChild(newCard);
@@ -80,7 +81,7 @@ function createCarCard(car) {
   return carDisplay;
 }
 
-function createDcCard() {
+function createDcCard(dcCard) {
   var dcCardDisplay = new DcCardDisplay();
   dcCardDisplay.rotation = -90;
 
@@ -91,19 +92,13 @@ function createDcCard() {
 }
 
 function createInsuranceCard() {
-  return createGenericCard("#22FF77");
-}
+  var insuranceDisplay = new InsuranceDisplay();
+  insuranceDisplay.rotation = -90;
 
-function createGenericCard(color) {
-  var shape = new createjs.Shape();
-  shape.graphics
-    .beginStroke("#000")
-    .beginFill(color)
-    .drawRect(0, 0, DECK_WIDTH, DECK_HEIGHT);
-  shape.regX = DECK_WIDTH / 2;
-  shape.regY = DECK_HEIGHT / 2;
-  shape.x = shape.regX;
-  return shape;
+  // regY because it's rotated
+  insuranceDisplay.x = insuranceDisplay.regY;
+
+  return insuranceDisplay;
 }
 
 module.exports = createjs.promote(Decks, "Container");

@@ -128,7 +128,6 @@ Polymer({
   },
 
   giveDcCardFromDeck: function(userIdx, dcCard) {
-    // this._gdcfdImpl(userIdx, dcCard);
     animationThrottler.requestAnim(
       this._gdcfdImpl.bind(this, userIdx, dcCard)
     ).done();

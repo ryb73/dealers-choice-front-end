@@ -16,7 +16,7 @@ $(function() {
       {
         name: "player1",
         player: {
-          dcCards: ["", "", ""],
+          dcCards: [],
           cars: [availCars.pop(), availCars.pop(), availCars.pop()],
           insurances: [],
         },
@@ -36,7 +36,7 @@ $(function() {
       {
         name: "player3",
         player: {
-          dcCards: [""],
+          dcCards: [],
           cars: [],
           insurances: [],
         },
