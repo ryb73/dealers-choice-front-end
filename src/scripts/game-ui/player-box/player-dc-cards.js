@@ -54,10 +54,4 @@ p._getCardSpacingFactor = function() {
   return Math.min(idealCSF, availCSF);
 };
 
-p.makeSpaceForCard = function(transitionTime) {
-  this._cardSlots.push(null);
-  this._rearrangeCards(transitionTime);
-  return this._getCoordsForCard(this._cardSlots.length - 1);
-};
-
 module.exports = createjs.promote(PlayerDcCards, "PlayerHand");

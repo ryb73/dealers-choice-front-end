@@ -85,7 +85,7 @@ p.setRotation = function(rotationDeg) {
 };
 
 p.makeSpaceForCar = function(transitionTime) {
-  var coords = this._playerCars.makeSpaceForCar(transitionTime);
+  var coords = this._playerCars.makeSpaceForCard(transitionTime);
   var carDispCoords = getCoordsForCars(this._playerCars);
   createjs.Tween.get(this._playerCars)
     .to(carDispCoords, transitionTime);

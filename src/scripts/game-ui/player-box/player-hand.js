@@ -43,6 +43,12 @@ p._rearrangeCards = function(transitionTime) {
   }
 };
 
+p.makeSpaceForCard = function(transitionTime) {
+  this._cardSlots.push(null);
+  this._rearrangeCards(transitionTime);
+  return this._getCoordsForCard(this._cardSlots.length - 1);
+};
+
 p.putCardInBlankSpace = function(qNewCard) {
   return qNewCard.then(function(newCard) {
     if(this._openSlotIdx === this._cardSlots.length)

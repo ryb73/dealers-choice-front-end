@@ -107,7 +107,8 @@ p._addCar = function(car) {
   return dispCar;
 };
 
-p.makeSpaceForCar = function(transitionTime) {
+// Overrides superclass
+p.makeSpaceForCard = function(transitionTime) {
   var newCarNum = this._cardSlots.length + 1;
 
   // Resize if necessary
@@ -120,9 +121,7 @@ p.makeSpaceForCar = function(transitionTime) {
                          getTotalHeight(newRows));
   }
 
-  this._cardSlots.push(null);
-  this._rearrangeCards(transitionTime);
-  return this._getCoordsForCard(newCarNum - 1);
+  return this.PlayerHand_makeSpaceForCard(transitionTime);
 };
 
 p.setRotation = function(rotation) {

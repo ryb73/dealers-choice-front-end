@@ -108,7 +108,7 @@ Polymer({
   giveCarFromDeck: function(userIdx, car) {
     animationThrottler.requestAnim(
       this._gcfdImpl.bind(this, userIdx, car)
-    );
+    ).done();
   },
 
   _gcfdImpl: function(userIdx, car) {
@@ -131,7 +131,7 @@ Polymer({
     // this._gdcfdImpl(userIdx, dcCard);
     animationThrottler.requestAnim(
       this._gdcfdImpl.bind(this, userIdx, dcCard)
-    );
+    ).done();
   },
 
   //TODO: this looks very similar to giveCarFromDeck. refactor?
