@@ -2,7 +2,8 @@
 /* jshint globalstrict: true */
 "use strict";
 
-var constants = require("../constants");
+var constants     = require("../constants"),
+    DcCardDisplay = require("../cards/dc-card-display");
 
 function PlayerDcCards(availWidth, cards, isMe) {
   this.Container_constructor();
@@ -20,33 +21,27 @@ var p = createjs.extend(PlayerDcCards, createjs.Container);
 
 p._addCards = function(cards) {
   for(var i = 0; i < cards.length; ++i)
+    this._addToOpenSlot(new DcCardDisplay());
+
+  this._rearrangeCards();
+};
+
+p._addToOpenSlot = function(dispCard) {
+  if(!this._hasOpenSlot())
     this._cardSlots.push(null);
 
-  var cardSpacingFactor = this._getCardSpacingFactor();
-  var originX = this._getOriginX(cardSpacingFactor);
+  this._cardSlots[this._openSlotIdx] = dispCard;
+  ++this._openSlotIdx;
+  this.addChild(dispCard);
+};
 
-  cards.forEach(function(card, idx) {
-    this._cardSlots[idx] = new createjs.Shape();
-
-    this._cardSlots[idx].graphics
-      .beginFill("#AA0099")
-      .beginStroke("black")
-      .drawRect(
-        0, 0, constants.dcCardWidth, constants.dcCardHeight
-      );
-
-    this._cardSlots[idx].regX = constants.dcCardWidth / 2;
-    this._cardSlots[idx].regY = constants.dcCardHeight / 2;
-    this._cardSlots[idx].x = originX + idx * cardSpacingFactor *
-                              constants.dcCardWidth;
-    this._cardSlots[idx].y = this._cardSlots[idx].regY;
-
-    this.addChild(this._cardSlots[idx]);
-    ++this._openSlotIdx;
-  }.bind(this));
+p._hasOpenSlot = function() {
+  return this._openSlotIdx !== this._cardSlots.length;
 };
 
 p._rearrangeCards = function(transitionTime) {
+  if(transitionTime === undefined) transitionTime = 0;
+
   for(var i = 0; i < this._cardSlots.length; ++i) {
     var dispCard = this._cardSlots[i];
     if(!dispCard) continue;

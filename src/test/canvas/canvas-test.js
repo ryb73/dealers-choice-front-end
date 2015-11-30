@@ -16,8 +16,8 @@ $(function() {
       {
         name: "player1",
         player: {
-          dcCards: [],
-          cars: [],
+          dcCards: ["", "", ""],
+          cars: [availCars.pop(), availCars.pop(), availCars.pop()],
           insurances: [],
         },
         dispObjs: {}
@@ -27,7 +27,7 @@ $(function() {
         name: "player2",
         player: {
           dcCards: [],
-          cars: [],
+          cars: [availCars.pop(), availCars.pop()],
           insurances: [],
         },
         dispObjs: {}
@@ -36,7 +36,7 @@ $(function() {
       {
         name: "player3",
         player: {
-          dcCards: [],
+          dcCards: [""],
           cars: [],
           insurances: [],
         },
@@ -87,6 +87,7 @@ $(function() {
     }
 
     for(i = 0; i < numPlayers * 4; ++i) {
+      if(availCars.length === 0) shuffleCars();
       canvas.giveCarFromDeck(i % numPlayers, availCars.pop());
     }
   }

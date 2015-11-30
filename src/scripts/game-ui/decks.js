@@ -76,18 +76,12 @@ p.giveDcCard = function(car, destCoords, transitionTime) {
 //      a blank car
 function createCarCard(car) {
   var carDisplay = new CarDisplay(car);
-  var bounds = carDisplay.getBounds();
-  carDisplay.regX = bounds.width / 2;
-  carDisplay.regY = bounds.height / 2;
   carDisplay.x = carDisplay.regX;
   return carDisplay;
 }
 
 function createDcCard() {
   var dcCardDisplay = new DcCardDisplay();
-  var bounds = dcCardDisplay.getBounds();
-  dcCardDisplay.regX = bounds.width / 2;
-  dcCardDisplay.regY = bounds.height / 2;
   dcCardDisplay.rotation = -90;
 
   // regY because it's rotated

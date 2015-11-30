@@ -6,15 +6,21 @@ function CardDisplay(backImage, frontImage) {
   this.Container_constructor();
 
   this._backBmp = createBmp(backImage);
-  var bounds = this._backBmp.getBounds();
-  this.setBounds(0, 0, bounds.width, bounds.height);
   this.addChild(this._backBmp);
+  this._updateBounds();
 
   if(frontImage)
     this._frontBmp = createBmp(frontImage);
 }
 
 var p = createjs.extend(CardDisplay, createjs.Container);
+
+p._updateBounds = function() {
+  var bounds = this._backBmp.getBounds();
+  this.setBounds(0, 0, bounds.width, bounds.height);
+  this.regX = bounds.width / 2;
+  this.regY = bounds.height / 2;
+};
 
 function createBmp(image) {
   var bmp = new createjs.Bitmap(image);
