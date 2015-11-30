@@ -30,14 +30,16 @@ function createBmp(image) {
 
 // Only support back to front for now
 p.flip = function(delay) {
+  if(!delay) delay = 0;
+
   createjs.Tween.get(this._backBmp)
-    .to({ scaleX: 0, x: this._backBmp.regX }, delay / 2)
+    .to({ scaleX: 0, x: this.regX }, delay / 2)
     .call(this._flipToFront.bind(this, delay));
 };
 
 p._flipToFront = function(delay) {
   this._frontBmp.scaleX = 0;
-  this._frontBmp.x = this._frontBmp.regX;
+  this._frontBmp.x = this.regX;
   this.addChild(this._frontBmp);
   createjs.Tween.get(this._frontBmp)
     .to({ scaleX: 1, x: 0 }, delay / 2);

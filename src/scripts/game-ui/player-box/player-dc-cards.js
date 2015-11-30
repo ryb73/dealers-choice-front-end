@@ -3,40 +3,26 @@
 "use strict";
 
 var constants     = require("../constants"),
-    DcCardDisplay = require("../cards/dc-card-display");
+    DcCardDisplay = require("../cards/dc-card-display"),
+    PlayerHand    = require("./player-hand");
 
 function PlayerDcCards(availWidth, cards, isMe) {
-  this.Container_constructor();
-
-  this.setBounds(0, 0, availWidth, constants.dcCardHeight);
-
   this._availWidth = availWidth;
   this._isMe = isMe;
-  this._cardSlots = [];
-  this._openSlotIdx = 0;
-  this._addCards(cards);
+
+  this.PlayerHand_constructor(cards);
+
+  this.setBounds(0, 0, availWidth, constants.dcCardHeight);
 }
 
-var p = createjs.extend(PlayerDcCards, createjs.Container);
+var p = createjs.extend(PlayerDcCards, PlayerHand);
 
+// Overrides superclass
 p._addCards = function(cards) {
   for(var i = 0; i < cards.length; ++i)
     this._addToOpenSlot(new DcCardDisplay());
 
   this._rearrangeCards();
-};
-
-p._addToOpenSlot = function(dispCard) {
-  if(!this._hasOpenSlot())
-    this._cardSlots.push(null);
-
-  this._cardSlots[this._openSlotIdx] = dispCard;
-  ++this._openSlotIdx;
-  this.addChild(dispCard);
-};
-
-p._hasOpenSlot = function() {
-  return this._openSlotIdx !== this._cardSlots.length;
 };
 
 p._rearrangeCards = function(transitionTime) {
@@ -47,9 +33,8 @@ p._rearrangeCards = function(transitionTime) {
     if(!dispCard) continue;
 
     createjs.Tween.get(dispCard)
-      .to({
-            x: this._getCoordsForCard(i).x
-          }, transitionTime, createjs.Ease.cubicOut);
+      .to(this._getCoordsForCard(i), transitionTime,
+        createjs.Ease.cubicOut);
   }
 };
 
@@ -110,4 +95,4 @@ p.putCardInBlankSpace = function(qNewCard) {
   }.bind(this));
 };
 
-module.exports = createjs.promote(PlayerDcCards, "Container");
+module.exports = createjs.promote(PlayerDcCards, "PlayerHand");

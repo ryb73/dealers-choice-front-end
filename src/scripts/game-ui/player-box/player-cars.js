@@ -2,21 +2,20 @@
 /* jshint globalstrict: true */
 "use strict";
 
-var consts = require("../constants");
+var consts     = require("../constants"),
+    CarDisplay = require("../cards/car-display"),
+    PlayerHand = require("./player-hand");
 
 var VERT_SPACING  = 10,
     HORIZ_SPACING = 10;
 
 function PlayerCars(cars) {
-  this.Container_constructor();
+  this.PlayerHand_constructor(cars);
 
-  this._carSlots = [];
-  this._openSlotIdx = 0;
-
-  this._addCars(cars);
+  this._resetBounds();
 }
 
-var p = createjs.extend(PlayerCars, createjs.Container);
+var p = createjs.extend(PlayerCars, PlayerHand);
 
 function getTotalColumns(numCars) {
   return Math.ceil(Math.sqrt(numCars));
@@ -82,39 +81,32 @@ p._getCoordsForCar = function(whichCarIndex, numCars) {
   };
 };
 
-p._addCars = function(cars) {
-  var columns = getTotalColumns(cars.length);
-  var rows = getTotalRows(cars.length);
+p._resetBounds = function() {
+  var columns = getTotalColumns(this._cardSlots.length);
+  var rows = getTotalRows(this._cardSlots.length);
 
   this.setBounds(0, 0, getRowWidth(columns),
                        getTotalHeight(rows));
-
-  for(var i = 0; i < cars.length; ++i) {
-    var carCoords = this._getCoordsForCar(i, cars.length);
-    var dispCar = this._addCar(cars[i], carCoords.x, carCoords.y);
-    this._carSlots.push(dispCar);
-    this._openSlotIdx++;
-  }
 };
 
-p._addCar = function(car, x, y) {
-  var rect = new createjs.Shape();
-  rect.graphics
-    .beginStroke("#000")
-    .beginFill("#FABA2F")
-    .drawRect(0, 0, consts.carWidth, consts.carHeight);
+// Overrides superclass
+p._addCards = function(cars) {
+  for(var i = 0; i < cars.length; ++i) {
+    var dispCar = this._addCar(cars[i]);
+    this._addToOpenSlot(dispCar);
+  }
 
-  rect.x = x;
-  rect.y = y;
-  rect.regX = consts.carWidth / 2;
-  rect.regY = consts.carHeight / 2;
-  this.addChild(rect);
+  this._rearrangeCars();
+};
 
-  return rect;
+p._addCar = function(car) {
+  var dispCar = new CarDisplay(car);
+  dispCar.flip();
+  return dispCar;
 };
 
 p.makeSpaceForCar = function(transitionTime) {
-  var newCarNum = this._carSlots.length + 1;
+  var newCarNum = this._cardSlots.length + 1;
 
   // Resize if necessary
   var newColumns = getTotalColumns(newCarNum);
@@ -126,7 +118,7 @@ p.makeSpaceForCar = function(transitionTime) {
                          getTotalHeight(newRows));
   }
 
-  this._carSlots.push(null);
+  this._cardSlots.push(null);
   this._rearrangeCars(transitionTime);
   return this._getCoordsForCar(newCarNum - 1, newCarNum);
 };
@@ -134,10 +126,10 @@ p.makeSpaceForCar = function(transitionTime) {
 p._rearrangeCars = function(transitionTime) {
   if(transitionTime === undefined) transitionTime = 0;
 
-  var numCars = this._carSlots.length;
+  var numCars = this._cardSlots.length;
 
-  for(var i = 0; i < this._carSlots.length; ++i) {
-    var dispCar = this._carSlots[i];
+  for(var i = 0; i < this._cardSlots.length; ++i) {
+    var dispCar = this._cardSlots[i];
     if(!dispCar) continue;
 
     createjs.Tween.get(dispCar)
@@ -148,16 +140,16 @@ p._rearrangeCars = function(transitionTime) {
 
 p.putCarInBlankSpace = function(qNewCar) {
   return qNewCar.then(function(newCar) {
-    if(this._openSlotIdx === this._carSlots.length)
+    if(this._openSlotIdx === this._cardSlots.length)
       throw new Error("No open slots in car display");
 
     if(newCar.parent)
       newCar.parent.removeChild(newCar);
 
-    this._carSlots[this._openSlotIdx] = newCar;
+    this._cardSlots[this._openSlotIdx] = newCar;
 
     var coords = this._getCoordsForCar(this._openSlotIdx,
-                  this._carSlots.length);
+                  this._cardSlots.length);
     newCar.x = coords.x;
     newCar.y = coords.y;
     newCar.rotation = coords.rotation;
@@ -172,4 +164,4 @@ p.setRotation = function(rotation) {
   this._rearrangeCars();
 };
 
-module.exports = createjs.promote(PlayerCars, "Container");
+module.exports = createjs.promote(PlayerCars, "PlayerHand");
