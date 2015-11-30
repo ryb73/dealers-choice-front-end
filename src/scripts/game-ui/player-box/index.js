@@ -105,7 +105,7 @@ function getCoordsForCars(playerCars) {
 }
 
 p.putCarInBlankSpace = function(qNewCar) {
-  return this._playerCars.putCarInBlankSpace(qNewCar);
+  return this._playerCars.putCardInBlankSpace(qNewCar);
 };
 
 p.makeSpaceForDcCard = function(transitionTime) {

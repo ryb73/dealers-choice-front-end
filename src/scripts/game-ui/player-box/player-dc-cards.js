@@ -60,26 +60,4 @@ p.makeSpaceForCard = function(transitionTime) {
   return this._getCoordsForCard(this._cardSlots.length - 1);
 };
 
-//TODO: this totally needs to be extracted into a superclass
-p.putCardInBlankSpace = function(qNewCard) {
-  return qNewCard.then(function(newCard) {
-    if(this._openSlotIdx === this._cardSlots.length)
-      throw new Error("No open slots in car display");
-
-    if(newCard.parent)
-      newCard.parent.removeChild(newCard);
-
-    this._cardSlots[this._openSlotIdx] = newCard;
-
-    var coords = this._getCoordsForCard(this._openSlotIdx,
-                  this._cardSlots.length);
-    newCard.x = coords.x;
-    newCard.y = coords.y;
-    newCard.rotation = coords.rotation;
-    this.addChild(newCard);
-
-    ++this._openSlotIdx;
-  }.bind(this));
-};
-
 module.exports = createjs.promote(PlayerDcCards, "PlayerHand");

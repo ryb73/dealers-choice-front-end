@@ -125,26 +125,6 @@ p.makeSpaceForCar = function(transitionTime) {
   return this._getCoordsForCard(newCarNum - 1);
 };
 
-p.putCarInBlankSpace = function(qNewCar) {
-  return qNewCar.then(function(newCar) {
-    if(this._openSlotIdx === this._cardSlots.length)
-      throw new Error("No open slots in car display");
-
-    if(newCar.parent)
-      newCar.parent.removeChild(newCar);
-
-    this._cardSlots[this._openSlotIdx] = newCar;
-
-    var coords = this._getCoordsForCard(this._openSlotIdx);
-    newCar.x = coords.x;
-    newCar.y = coords.y;
-    newCar.rotation = coords.rotation;
-    this.addChild(newCar);
-
-    ++this._openSlotIdx;
-  }.bind(this));
-};
-
 p.setRotation = function(rotation) {
   if(this.rotation === rotation) return;
   this._rotation = rotation;

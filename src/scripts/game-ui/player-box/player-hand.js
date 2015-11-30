@@ -43,6 +43,26 @@ p._rearrangeCards = function(transitionTime) {
   }
 };
 
+p.putCardInBlankSpace = function(qNewCard) {
+  return qNewCard.then(function(newCard) {
+    if(this._openSlotIdx === this._cardSlots.length)
+      throw new Error("No open slots in car display");
+
+    if(newCard.parent)
+      newCard.parent.removeChild(newCard);
+
+    this._cardSlots[this._openSlotIdx] = newCard;
+
+    var coords = this._getCoordsForCard(this._openSlotIdx);
+    newCard.x = coords.x;
+    newCard.y = coords.y;
+    newCard.rotation = coords.rotation;
+    this.addChild(newCard);
+
+    ++this._openSlotIdx;
+  }.bind(this));
+};
+
 p._addCards = unimplemented;
 
 function unimplemented() {
