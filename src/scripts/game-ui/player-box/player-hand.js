@@ -30,6 +30,19 @@ p._hasOpenSlot = function() {
   return this._openSlotIdx !== this._cardSlots.length;
 };
 
+p._rearrangeCards = function(transitionTime) {
+  if(transitionTime === undefined) transitionTime = 0;
+
+  for(var i = 0; i < this._cardSlots.length; ++i) {
+    var dispCard = this._cardSlots[i];
+    if(!dispCard) continue;
+
+    createjs.Tween.get(dispCard)
+      .to(this._getCoordsForCard(i), transitionTime,
+        createjs.Ease.cubicOut);
+  }
+};
+
 p._addCards = unimplemented;
 
 function unimplemented() {

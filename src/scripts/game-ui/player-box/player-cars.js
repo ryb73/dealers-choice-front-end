@@ -43,7 +43,9 @@ function getTotalHeight(numRows) {
          (numRows - 1) * VERT_SPACING;
 }
 
-p._getCoordsForCar = function(whichCarIndex, numCars) {
+p._getCoordsForCard = function(whichCarIndex) {
+  var numCars = this._cardSlots.length;
+
   var column = getColumnForCar(whichCarIndex, numCars);
   var row = getRowForCar(whichCarIndex, numCars);
 
@@ -96,7 +98,7 @@ p._addCards = function(cars) {
     this._addToOpenSlot(dispCar);
   }
 
-  this._rearrangeCars();
+  this._rearrangeCards();
 };
 
 p._addCar = function(car) {
@@ -119,23 +121,8 @@ p.makeSpaceForCar = function(transitionTime) {
   }
 
   this._cardSlots.push(null);
-  this._rearrangeCars(transitionTime);
-  return this._getCoordsForCar(newCarNum - 1, newCarNum);
-};
-
-p._rearrangeCars = function(transitionTime) {
-  if(transitionTime === undefined) transitionTime = 0;
-
-  var numCars = this._cardSlots.length;
-
-  for(var i = 0; i < this._cardSlots.length; ++i) {
-    var dispCar = this._cardSlots[i];
-    if(!dispCar) continue;
-
-    createjs.Tween.get(dispCar)
-      .to(this._getCoordsForCar(i, numCars),
-           transitionTime, createjs.Ease.cubicOut);
-  }
+  this._rearrangeCards(transitionTime);
+  return this._getCoordsForCard(newCarNum - 1);
 };
 
 p.putCarInBlankSpace = function(qNewCar) {
@@ -148,8 +135,7 @@ p.putCarInBlankSpace = function(qNewCar) {
 
     this._cardSlots[this._openSlotIdx] = newCar;
 
-    var coords = this._getCoordsForCar(this._openSlotIdx,
-                  this._cardSlots.length);
+    var coords = this._getCoordsForCard(this._openSlotIdx);
     newCar.x = coords.x;
     newCar.y = coords.y;
     newCar.rotation = coords.rotation;
@@ -160,8 +146,9 @@ p.putCarInBlankSpace = function(qNewCar) {
 };
 
 p.setRotation = function(rotation) {
+  if(this.rotation === rotation) return;
   this._rotation = rotation;
-  this._rearrangeCars();
+  this._rearrangeCards();
 };
 
 module.exports = createjs.promote(PlayerCars, "PlayerHand");

@@ -25,19 +25,6 @@ p._addCards = function(cards) {
   this._rearrangeCards();
 };
 
-p._rearrangeCards = function(transitionTime) {
-  if(transitionTime === undefined) transitionTime = 0;
-
-  for(var i = 0; i < this._cardSlots.length; ++i) {
-    var dispCard = this._cardSlots[i];
-    if(!dispCard) continue;
-
-    createjs.Tween.get(dispCard)
-      .to(this._getCoordsForCard(i), transitionTime,
-        createjs.Ease.cubicOut);
-  }
-};
-
 p._getCoordsForCard = function(idx) {
   var cardSpacingFactor = this._getCardSpacingFactor();
   var originX = this._getOriginX(cardSpacingFactor);
