@@ -35,11 +35,21 @@ p._rearrangeCards = function(transitionTime) {
     var dispCard = this._cardSlots[i];
     if(!dispCard) continue;
 
+    var coords = this._getCoordsForCard(i);
+    randomizeCoords(coords);
+
     createjs.Tween.get(dispCard, { override: true })
-      .to(this._getCoordsForCard(i), transitionTime,
+      .to(coords, transitionTime,
         createjs.Ease.cubicOut);
   }
 };
+
+// Randomize coords a bit more a slightly more realistic look
+function randomizeCoords(coords) {
+  coords.x += (Math.random() * 9) - 4;
+  coords.y += (Math.random() * 9) - 4;
+  coords.rotation += (Math.random() * 5) - 2;
+}
 
 p.makeSpaceForCard = function(transitionTime) {
   this._cardSlots.push(null);

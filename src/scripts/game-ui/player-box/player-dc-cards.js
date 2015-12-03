@@ -31,7 +31,8 @@ p._getCoordsForCard = function(idx) {
   return {
     x: originX + idx * cardSpacingFactor *
         constants.dcCardWidth,
-    y: constants.dcCardHeight / 2
+    y: constants.dcCardHeight / 2,
+    rotation: 0
   };
 };
 

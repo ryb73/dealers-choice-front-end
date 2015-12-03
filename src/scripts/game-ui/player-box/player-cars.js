@@ -125,20 +125,9 @@ p.makeSpaceForCard = function(transitionTime) {
 };
 
 p.setRotation = function(rotation) {
-  if(this.rotation === rotation) return;
+  if(this._rotation === rotation) return;
   this._rotation = rotation;
   this._rearrangeCards();
 };
-
-// //DEBUG
-// p.draw = function(ctx, ic) {
-//   var rot = [];
-//   for(var i = 0; i < this._cardSlots.length; ++i) {
-//     rot.push(this._cardSlots[i].rotation);
-//   }
-//   console.log(rot);
-
-//   this.PlayerHand_draw(ctx, ic);
-// };
 
 module.exports = createjs.promote(PlayerCars, "PlayerHand");
