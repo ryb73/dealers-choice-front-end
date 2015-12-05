@@ -2,7 +2,7 @@
 /* jshint globalstrict: true */
 "use strict";
 
-var constants     = require("../constants"),
+var consts     = require("../constants"),
     DcCardDisplay = require("../cards/dc-card-display"),
     PlayerHand    = require("./player-hand");
 
@@ -12,7 +12,7 @@ function PlayerDcCards(availWidth, cards, isMe) {
 
   this.PlayerHand_constructor(cards);
 
-  this.setBounds(0, 0, availWidth, constants.dcCardHeight);
+  this.setBounds(0, 0, availWidth, consts.cardLength);
 }
 
 var p = createjs.extend(PlayerDcCards, PlayerHand);
@@ -30,8 +30,8 @@ p._getCoordsForCard = function(idx) {
   var originX = this._getOriginX(cardSpacingFactor);
   return {
     x: originX + idx * cardSpacingFactor *
-        constants.dcCardWidth,
-    y: constants.dcCardHeight / 2,
+        consts.cardBreadth,
+    y: consts.cardLength / 2,
     rotation: 0
   };
 };
@@ -40,17 +40,17 @@ p._getCoordsForCard = function(idx) {
 // This allows us to determine where we should place the first
 // card.
 p._getOriginX = function(cardSpacingFactor) {
-  var cardsHSpace = cardSpacingFactor * constants.dcCardWidth *
+  var cardsHSpace = cardSpacingFactor * consts.cardBreadth *
                      (this._cardSlots.length - 1) +
-                     constants.dcCardWidth;
+                     consts.cardBreadth;
   return (this._availWidth - cardsHSpace) / 2 +
-          constants.dcCardWidth / 2; // account for regX
+          consts.cardBreadth / 2; // account for card regX
 };
 
 p._getCardSpacingFactor = function() {
   var idealCSF = (this._isMe) ? 1.25 : 0.75;
   var availCSF = this._availWidth /
-                  (constants.dcCardWidth * this._cardSlots.length);
+                  (consts.cardBreadth * this._cardSlots.length);
 
   return Math.min(idealCSF, availCSF);
 };

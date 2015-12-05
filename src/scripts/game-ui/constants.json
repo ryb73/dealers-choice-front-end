@@ -1,7 +1,4 @@
 {
-  "carWidth":  93,
-  "carHeight": 60,
-
-  "dcCardWidth": 60,
-  "dcCardHeight": 93
+  "cardLength":  93,
+  "cardBreadth": 60
 }
