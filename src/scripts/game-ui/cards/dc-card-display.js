@@ -3,6 +3,7 @@
 "use strict";
 
 var CardDisplay = require("./card-display"),
+    consts      = require("../constants"),
     assets      = require("../assets");
 
 function DcCardDisplay(dcCard) {
@@ -21,7 +22,7 @@ function drawFront(dcCard) {
   var bounds = blankBg.getBounds();
 
   var title = new createjs.Text(dcCard.title.toUpperCase(),
-    "40px 'DC Card Header'", "#53412b");
+    "36px 'DC Card Header'", "#53412b");
   title.lineWidth = bounds.width - 32;
   title.x = 16;
   title.y = 10;
@@ -36,8 +37,8 @@ function drawFront(dcCard) {
   innerContainer.addChild(blankBg);
   innerContainer.addChild(title);
   innerContainer.addChild(description);
-  innerContainer.scaleX = 60 / 220;
-  innerContainer.scaleY = 93 / 341;
+  innerContainer.scaleX = consts.cardBreadth / bounds.width;
+  innerContainer.scaleY = consts.cardLength / bounds.height;
 
   // Protect the inner container from being modified by the outside
   var outerContainer = new createjs.Container();
