@@ -254,7 +254,9 @@ Polymer({
       x: this._width() / 2,
       y: this._height() / 2 + 25
     };
-    var radius = (this._height() * 0.65) / 2;
+
+    var majorRad = (this._width() * 0.6) / 2;
+    var minorRad = (this._height() * 0.6) / 2;
 
     var anglePerPlayer =
       2 * Math.PI / this.gameState.users.length;
@@ -263,8 +265,8 @@ Polymer({
       Math.PI / 2; // begin at bottom of screen
 
     return {
-      x: origin.x + Math.cos(angle) * radius,
-      y: origin.y + Math.sin(angle) * radius,
+      x: origin.x + Math.cos(angle) * majorRad,
+      y: origin.y + Math.sin(angle) * minorRad,
 
       // Our starting angle is Math.PI / 2, at which point
       // we have zero rotation. As we go around the circle,
