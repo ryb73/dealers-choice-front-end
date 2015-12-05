@@ -48,7 +48,8 @@ function build(buildDir, prodMode) {
     .then(buildStyles.bind(null, SRC_DIR, buildDir, prodMode))
     .then(buildScripts.bind(null, SRC_DIR, buildDir, prodMode))
     .then(buildHtml.bind(null, SRC_DIR, buildDir, prodMode))
-    .then(copyImages(buildDir));
+    .then(copyImages(buildDir))
+    .then(copyFonts(buildDir));
 }
 
 function copyVendor(buildDir) {
@@ -77,6 +78,10 @@ function copyVendor(buildDir) {
 
 function copyImages(buildDir) {
   return doCopy(SRC_DIR + "images/**", buildDir + "images");
+}
+
+function copyFonts(buildDir) {
+  return doCopy(SRC_DIR + "fonts/**", buildDir + "fonts");
 }
 
 function doCopy(src, dest, fileName) {

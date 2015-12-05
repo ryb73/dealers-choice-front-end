@@ -10,7 +10,10 @@ function CarDisplay(car) {
   if(car && car.image)
     frontImgId = car.image;
 
-  this.CardDisplay_constructor(assets.carBack, assets[frontImgId]);
+  this.CardDisplay_constructor(
+    new createjs.Bitmap(assets.carBack),
+    new createjs.Bitmap(assets[frontImgId])
+  );
 }
 
 createjs.extend(CarDisplay, CardDisplay);

@@ -6,6 +6,8 @@ var Evemit = require("evemit");
 
 var assetTable = {
   "/images/dc-cards/back.png" : "dcCardBack",
+  "/images/dc-cards/blank.png" : "dcCardBlank",
+  "/images/dc-cards/blank-small.png" : "dcCardBlankSm",
 
   "/images/insurance/back.png" : "insuranceBack",
 

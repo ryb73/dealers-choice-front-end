@@ -9,6 +9,9 @@ $(function() {
   var availCars = [];
   shuffleCars();
 
+  var availDcCards = [];
+  shuffleDcCards();
+
   var canvas = document.createElement("dc-game-canvas");
   // canvas.debugMode = true;
   canvas.gameState = {
@@ -83,7 +86,7 @@ $(function() {
 
     var i;
     for(i = 0; i < numPlayers * 5; ++i) {
-      canvas.giveDcCardFromDeck(i % numPlayers, "");
+      canvas.giveDcCardFromDeck(i % numPlayers, availDcCards.pop());
     }
 
     for(i = 0; i < numPlayers * 4; ++i) {
@@ -100,12 +103,35 @@ $(function() {
     availCars = _.shuffle(availCars);
   }
 
+  function shuffleDcCards() {
+    availDcCards.push({
+      title: "Forced Sale",
+      description: "Force another dealer to buy one of your cars of his choice."
+    });
+    availDcCards.push({
+      title: "List+3",
+      description: "Sell a car for List Price."
+    });
+    availDcCards.push({
+      title: "Collision",
+      description: "Force another dealer to return one of his cars of your choice to Auto Exchange or he may pay repair bill of 1/2 List Price to bank and keep car."
+    });
+    availDcCards.push({
+      title: "Rancid Popcorn",
+      description: "Attack another car with rancid popcorn."
+    });
+
+    for(var i = 0; i < 36; ++i) {
+      availDcCards.push(availDcCards[Math.floor(Math.random() * 4)]);
+    }
+  }
+
   function giveCar(playerIdx) {
     getCanvas().giveCarFromDeck(playerIdx, availCars.pop());
   }
 
   function giveDcCard(playerIdx) {
-    getCanvas().giveDcCardFromDeck(playerIdx, "");
+    getCanvas().giveDcCardFromDeck(playerIdx, availDcCards.pop());
   }
 
   function setHandSize(playerIdx, n) {

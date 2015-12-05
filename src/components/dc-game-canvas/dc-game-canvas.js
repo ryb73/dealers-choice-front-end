@@ -144,8 +144,15 @@ Polymer({
     cardCoords.x -= decks.x - decks.regX;
     cardCoords.y -= decks.y - decks.regY;
 
-    var qNewCard = decks.giveDcCard(dcCard, cardCoords, 500);
+    var qNewCard = decks.giveDcCard(dcCard, cardCoords, 500,
+                                     this._isMe(userIdx));
     return playerBox.putDcCardInBlankSpace(qNewCard);
+  },
+
+  // Determines whether the player at the given index
+  // is the current (i.e. local) player
+  _isMe: function(idx) {
+    return idx === 0;
   },
 
   _setup: function() {

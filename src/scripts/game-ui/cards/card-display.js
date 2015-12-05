@@ -2,46 +2,45 @@
 /* jshint globalstrict: true */
 "use strict";
 
-function CardDisplay(backImage, frontImage) {
+function CardDisplay(backDisp, frontDisp) {
   this.Container_constructor();
 
-  this._backBmp = createBmp(backImage);
-  this.addChild(this._backBmp);
+  this._backDisp = addShadow(backDisp);
+  this.addChild(this._backDisp);
   this._updateBounds();
 
-  if(frontImage)
-    this._frontBmp = createBmp(frontImage);
+  if(frontDisp)
+    this._frontDisp = addShadow(frontDisp);
 }
 
 var p = createjs.extend(CardDisplay, createjs.Container);
 
 p._updateBounds = function() {
-  var bounds = this._backBmp.getBounds();
+  var bounds = this._backDisp.getBounds();
   this.setBounds(0, 0, bounds.width, bounds.height);
   this.regX = bounds.width / 2;
   this.regY = bounds.height / 2;
 };
 
-function createBmp(image) {
-  var bmp = new createjs.Bitmap(image);
-  bmp.shadow = new createjs.Shadow("#807E73", 2, 2, 5);
-  return bmp;
+function addShadow(dispObj) {
+  dispObj.shadow = new createjs.Shadow("#807E73", 2, 2, 5);
+  return dispObj;
 }
 
 // Only support back to front for now
 p.flip = function(delay) {
   if(!delay) delay = 0;
 
-  createjs.Tween.get(this._backBmp)
+  createjs.Tween.get(this._backDisp)
     .to({ scaleX: 0, x: this.regX }, delay / 2)
     .call(this._flipToFront.bind(this, delay));
 };
 
 p._flipToFront = function(delay) {
-  this._frontBmp.scaleX = 0;
-  this._frontBmp.x = this.regX;
-  this.addChild(this._frontBmp);
-  createjs.Tween.get(this._frontBmp)
+  this._frontDisp.scaleX = 0;
+  this._frontDisp.x = this.regX;
+  this.addChild(this._frontDisp);
+  createjs.Tween.get(this._frontDisp)
     .to({ scaleX: 1, x: 0 }, delay / 2);
 };
 

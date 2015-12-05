@@ -57,9 +57,9 @@ p.giveCar = function(car, destCoords, transitionTime) {
   return deferred.promise;
 };
 
-p.giveDcCard = function(dcCard, destCoords, transitionTime) {
+p.giveDcCard = function(dcCard, destCoords, transitionTime, flip) {
   var newCard = createDcCard(dcCard);
-  // newCard.flip(transitionTime / 4);
+  if(flip) newCard.flip(transitionTime / 4);
   newCard.y = DC_CARD_Y;
   this.addChild(newCard);
 
@@ -82,7 +82,7 @@ function createCarCard(car) {
 }
 
 function createDcCard(dcCard) {
-  var dcCardDisplay = new DcCardDisplay();
+  var dcCardDisplay = new DcCardDisplay(dcCard);
   dcCardDisplay.rotation = -90;
 
   // regY because it's rotated

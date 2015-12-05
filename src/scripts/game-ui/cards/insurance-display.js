@@ -6,7 +6,7 @@ var CardDisplay = require("./card-display"),
     assets      = require("../assets");
 
 function InsuranceDisplay() {
-  this.CardDisplay_constructor(assets.insuranceBack);
+  this.CardDisplay_constructor(new createjs.Bitmap(assets.insuranceBack));
 }
 
 createjs.extend(InsuranceDisplay, CardDisplay);
