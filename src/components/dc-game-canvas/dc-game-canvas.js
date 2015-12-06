@@ -69,6 +69,7 @@ Polymer({
   attached: function() {
     var canvas = this.$.gameCanvas;
     stage = new createjs.Stage(canvas);
+    stage.enableMouseOver();
 
     createjs.Ticker.setFPS(60);
     createjs.Ticker.addEventListener("tick", stage);
@@ -217,9 +218,7 @@ Polymer({
 
     var playerBox = user.dispObjs.playerBox;
     if(!playerBox) {
-      playerBox = user.dispObjs.playerBox =
-        new PlayerBox(user, idx === 0, this.debugMode);
-      stage.addChildAt(playerBox, 1);
+      playerBox = this._addNewPlayerToStage(user, idx);
     }
 
     playerBox.setRotation(rotationDeg);
@@ -229,6 +228,35 @@ Polymer({
     playerBox.rotation = rotationDeg;
 
     if(this.debugMode) this._textAt(user, idx, coords);
+  },
+
+  _addNewPlayerToStage: function(user, idx) {
+    var playerBox = user.dispObjs.playerBox =
+      new PlayerBox(user, idx === 0, this.debugMode);
+    stage.addChildAt(playerBox, 1);
+
+    playerBox.on("car-mouseover", this._carMouseOver.bind(this, idx));
+    playerBox.on("car-mouseout", this._carMouseOut.bind(this, idx));
+    playerBox.on("dc-card-mouseover", this._dcCardMouseOver.bind(this, idx));
+    playerBox.on("dc-card-mouseout", this._dcCardMouseOut.bind(this, idx));
+
+    return playerBox;
+  },
+
+  _carMouseOver: function(userIdx, carEvent) {
+    console.log("over: ", userIdx, carEvent.carIndex);
+  },
+
+  _carMouseOut: function(userIdx, carEvent) {
+    console.log("out: ", userIdx, carEvent.carIndex);
+  },
+
+  _dcCardMouseOver: function(userIdx, cardEvent) {
+    console.log("over: ", userIdx, cardEvent.cardIndex);
+  },
+
+  _dcCardMouseOut: function(userIdx, cardEvent) {
+    console.log("out: ", userIdx, cardEvent.cardIndex);
   },
 
   _textAt: function(user, txt, coords) {

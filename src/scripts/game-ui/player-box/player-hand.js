@@ -14,14 +14,31 @@ function PlayerHand(cardsData) {
 }
 
 var p = createjs.extend(PlayerHand, createjs.Container);
+createjs.EventDispatcher.initialize(p);
 
 p._addToOpenSlot = function(dispCard) {
   if(!this._hasOpenSlot())
     this._cardSlots.push(null);
 
-  this._cardSlots[this._openSlotIdx] = dispCard;
-  ++this._openSlotIdx;
+  dispCard.on("rollover", this._cardMouseOver.bind(this, this._openSlotIdx));
+  dispCard.on("rollout", this._cardMouseOut.bind(this, this._openSlotIdx));
+
+  this._cardSlots[this._openSlotIdx++] = dispCard;
   this.addChild(dispCard);
+};
+
+p._cardMouseOver = function(idx) {
+  this.dispatchEvent({
+    type: "card-mouseover",
+    cardIndex: idx
+  });
+};
+
+p._cardMouseOut = function(idx) {
+  this.dispatchEvent({
+    type: "card-mouseout",
+    cardIndex: idx
+  });
 };
 
 p._hasOpenSlot = function() {
@@ -65,15 +82,12 @@ p.putCardInBlankSpace = function(qNewCard) {
     if(newCard.parent)
       newCard.parent.removeChild(newCard);
 
-    this._cardSlots[this._openSlotIdx] = newCard;
-
     var coords = this._getCoordsForCard(this._openSlotIdx);
     newCard.x = coords.x;
     newCard.y = coords.y;
     newCard.rotation = coords.rotation;
-    this.addChild(newCard);
 
-    ++this._openSlotIdx;
+    this._addToOpenSlot(newCard);
   }.bind(this));
 };
 

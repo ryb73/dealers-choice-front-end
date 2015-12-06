@@ -17,6 +17,7 @@ function PlayerBox(user, isMe, debugMode) {
 }
 
 var p = createjs.extend(PlayerBox, createjs.Container);
+createjs.EventDispatcher.initialize(p);
 
 p._setup = function(user, isMe, debugMode) {
   var height = (isMe) ? BOX_HEIGHT_ME : BOX_HEIGHT_OTHERS;
@@ -51,18 +52,50 @@ p._createCars = function(cars) {
   playerCars.y = carCoords.y;
   this.addChild(playerCars);
 
+  playerCars.on("card-mouseover", this._carMouseOver.bind(this));
+  playerCars.on("card-mouseout", this._carMouseOut.bind(this));
+
   this._playerCars = playerCars;
+};
+
+p._carMouseOver = function(e) {
+  this.dispatchEvent({
+    type: "car-mouseover",
+    carIndex: e.cardIndex
+  });
+};
+
+p._carMouseOut = function(e) {
+  this.dispatchEvent({
+    type: "car-mouseout",
+    carIndex: e.cardIndex
+  });
 };
 
 p._createDcCards = function(dcCards, isMe) {
   // Reg point is 0,0
-  var playerDcCards = new PlayerDcCards(
-    BOX_WIDTH, dcCards, isMe
-  );
+  var playerDcCards = new PlayerDcCards(BOX_WIDTH, dcCards, isMe);
   playerDcCards.y = 60;
   this.addChild(playerDcCards);
 
+  playerDcCards.on("card-mouseover", this._dcCardMouseOver.bind(this));
+  playerDcCards.on("card-mouseout", this._dcCardMouseOut.bind(this));
+
   this._playerDcCards = playerDcCards;
+};
+
+p._dcCardMouseOver = function(e) {
+  this.dispatchEvent({
+    type: "dc-card-mouseover",
+    cardIndex: e.cardIndex
+  });
+};
+
+p._dcCardMouseOut = function(e) {
+  this.dispatchEvent({
+    type: "dc-card-mouseout",
+    cardIndex: e.cardIndex
+  });
 };
 
 p._createAvatar = function(user) {
