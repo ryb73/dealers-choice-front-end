@@ -97,7 +97,10 @@ $(function() {
 
   function shuffleCars() {
     for(var i = 1; i <= 24; ++i) {
-      availCars.push({ image: "car" + i + "s" });
+      availCars.push({
+        image: "car" + i,
+        imageSm: "car" + i + "s"
+      });
     }
 
     availCars = _.shuffle(availCars);

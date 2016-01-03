@@ -5,10 +5,10 @@
 var CardDisplay = require("./card-display"),
     assets      = require("../assets");
 
-function CarDisplay(car) {
+function CarDisplay(car, fullSize) {
   var frontImgId;
-  if(car && car.image)
-    frontImgId = car.image;
+  if(car)
+    frontImgId = (fullSize) ? car.image : car.imageSm;
 
   this.CardDisplay_constructor(
     new createjs.Bitmap(assets.carBack),

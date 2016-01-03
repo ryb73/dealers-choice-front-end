@@ -1,5 +1,5 @@
 /* global Polymer, createjs, $, Decks, PlayerBox,
-          assets, LoadingSplash */
+          assets, LoadingSplash, CarDisplay */
 /* jshint globalstrict: true */
 "use strict";
 
@@ -8,6 +8,7 @@ var q                  = require("q"),
 
 var stage; // assume only one canvas per page
 var decks;
+var displayedCard;
 var animationThrottler = new AnimationThrottler();
 
 // Given an object and point relating to that object,
@@ -209,6 +210,8 @@ Polymer({
     this.gameState.users.forEach(
       this._positionPlayer.bind(this)
     );
+
+    this._positionDisplayedCard();
   },
 
   _positionPlayer: function(user, idx) {
@@ -245,10 +248,12 @@ Polymer({
 
   _carMouseOver: function(userIdx, carEvent) {
     console.log("over: ", userIdx, carEvent.carIndex);
+    this._showCar(this._getPlayer(userIdx).cars[carEvent.carIndex]);
   },
 
   _carMouseOut: function(userIdx, carEvent) {
-    console.log("out: ", userIdx, carEvent.carIndex);
+    stage.removeChild(displayedCard);
+    displayedCard = null;
   },
 
   _dcCardMouseOver: function(userIdx, cardEvent) {
@@ -257,6 +262,28 @@ Polymer({
 
   _dcCardMouseOut: function(userIdx, cardEvent) {
     console.log("out: ", userIdx, cardEvent.cardIndex);
+  },
+
+  // Gets the player object for the specified user
+  _getPlayer: function(userIdx) {
+    return this.gameState.users[userIdx].player;
+  },
+
+  _showCar: function(car) {
+    if(displayedCard)
+      stage.removeChild(displayedCard);
+
+    displayedCard = new CarDisplay(car, true);
+    this._positionDisplayedCard();
+    stage.addChild(displayedCard);
+  },
+
+  _positionDisplayedCard: function() {
+    if(displayedCard) {
+      var coords = this._getCenter();
+      displayedCard.x = coords.x;
+      displayedCard.y = coords.y;
+    }
   },
 
   _textAt: function(user, txt, coords) {
@@ -277,11 +304,15 @@ Polymer({
     user.dispObjs.pointLabel.y = coords.y;
   },
 
-  _getCoordsForPlayer: function(playerIndex) {
-    var origin = {
+  _getCenter: function() {
+    return {
       x: this._width() / 2,
       y: this._height() / 2 + 25
     };
+  },
+
+  _getCoordsForPlayer: function(playerIndex) {
+    var origin = this._getCenter();
 
     var majorRad = (this._width() * 0.6) / 2;
     var minorRad = (this._height() * 0.6) / 2;
