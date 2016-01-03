@@ -7,7 +7,7 @@ var q                  = require("q"),
     Decks              = gameUi.Decks,
     PlayerBox          = gameUi.PlayerBox,
     LoadingSplash      = gameUi.LoadingSplash,
-    CarDisplay         = gameUi.CarDisplay,
+    CarFront           = gameUi.CarFront,
     assets             = gameUi.assets,
     AnimationThrottler = require("./animation-throttler");
 
@@ -278,7 +278,7 @@ Polymer({
     if(displayedCard)
       stage.removeChild(displayedCard);
 
-    displayedCard = new CarDisplay(car, true);
+    displayedCard = new CarFront(car, true);
     this._positionDisplayedCard();
     stage.addChild(displayedCard);
   },
