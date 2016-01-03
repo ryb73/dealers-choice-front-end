@@ -1,7 +1,6 @@
 var $ = window.$ = require("jquery"),
     _ = require("lodash");
 require("webcomponents-lite");
-require("../../scripts/game-ui");
 
 $(function() {
   "use strict";

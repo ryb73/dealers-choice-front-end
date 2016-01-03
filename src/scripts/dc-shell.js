@@ -6,7 +6,6 @@ var io          = require("socket.io-client"),
 
 var $ = window.$ = require("jquery");
 require("webcomponents-lite");
-require("./game-ui");
 
 function DcShell() {
   "use strict";

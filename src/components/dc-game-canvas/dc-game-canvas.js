@@ -1,9 +1,14 @@
-/* global Polymer, createjs, $, Decks, PlayerBox,
-          assets, LoadingSplash, CarDisplay */
+/* global Polymer, createjs, $ */
 /* jshint globalstrict: true */
 "use strict";
 
 var q                  = require("q"),
+    gameUi             = require("dc-game-ui"),
+    Decks              = gameUi.Decks,
+    PlayerBox          = gameUi.PlayerBox,
+    LoadingSplash      = gameUi.LoadingSplash,
+    CarDisplay         = gameUi.CarDisplay,
+    assets             = gameUi.assets,
     AnimationThrottler = require("./animation-throttler");
 
 var stage; // assume only one canvas per page
