@@ -8,6 +8,7 @@ var q                  = require("q"),
     PlayerBox          = gameUi.PlayerBox,
     LoadingSplash      = gameUi.LoadingSplash,
     CarFront           = gameUi.CarFront,
+    DcCardFront        = gameUi.DcCardFront,
     assets             = gameUi.assets,
     AnimationThrottler = require("./animation-throttler");
 
@@ -113,6 +114,8 @@ Polymer({
   },
 
   giveCarFromDeck: function(userIdx, car) {
+    this._getPlayer(userIdx).cars.push(car);
+
     animationThrottler.requestAnim(
       this._gcfdImpl.bind(this, userIdx, car)
     ).done();
@@ -135,6 +138,8 @@ Polymer({
   },
 
   giveDcCardFromDeck: function(userIdx, dcCard) {
+    this._getPlayer(userIdx).dcCards.push(dcCard);
+
     animationThrottler.requestAnim(
       this._gdcfdImpl.bind(this, userIdx, dcCard)
     ).done();
@@ -252,7 +257,6 @@ Polymer({
   },
 
   _carMouseOver: function(userIdx, carEvent) {
-    console.log("over: ", userIdx, carEvent.carIndex);
     this._showCar(this._getPlayer(userIdx).cars[carEvent.carIndex]);
   },
 
@@ -262,11 +266,13 @@ Polymer({
   },
 
   _dcCardMouseOver: function(userIdx, cardEvent) {
-    console.log("over: ", userIdx, cardEvent.cardIndex);
+    if(this._isMe(userIdx))
+      this._showDcCard(this._getPlayer(userIdx).dcCards[cardEvent.cardIndex]);
   },
 
   _dcCardMouseOut: function(userIdx, cardEvent) {
-    console.log("out: ", userIdx, cardEvent.cardIndex);
+    stage.removeChild(displayedCard);
+    displayedCard = null;
   },
 
   // Gets the player object for the specified user
@@ -279,6 +285,15 @@ Polymer({
       stage.removeChild(displayedCard);
 
     displayedCard = new CarFront(car, true);
+    this._positionDisplayedCard();
+    stage.addChild(displayedCard);
+  },
+
+  _showDcCard: function(dcCard) {
+    if(displayedCard)
+      stage.removeChild(displayedCard);
+
+    displayedCard = new DcCardFront(dcCard, true);
     this._positionDisplayedCard();
     stage.addChild(displayedCard);
   },
