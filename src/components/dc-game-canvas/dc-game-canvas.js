@@ -9,11 +9,12 @@ var q                  = require("q"),
     LoadingSplash      = gameUi.LoadingSplash,
     CarFront           = gameUi.CarFront,
     DcCardFront        = gameUi.DcCardFront,
+    BlueBook           = gameUi.BlueBook,
     assets             = gameUi.assets,
     AnimationThrottler = require("./animation-throttler");
 
 var stage; // assume only one canvas per page
-var decks;
+var decks, blueBook, bgBmp;
 var displayedCard;
 var animationThrottler = new AnimationThrottler();
 
@@ -91,6 +92,8 @@ Polymer({
     if(this.loaded) {
       this._refreshDeck();
       this._refreshPlayers();
+      this._refreshBlueBook();
+      this._refreshBg();
       stage.update();
     }
   },
@@ -179,6 +182,7 @@ Polymer({
 
         this._createPlayers();
         this._createDecks();
+        this._createBlueBook();
         stage.update();
       }.bind(this));
   },
@@ -197,12 +201,17 @@ Polymer({
   },
 
   _createBackground: function() {
-    var bgBmp = new createjs.Bitmap("/images/game-bg.png");
+    bgBmp = new createjs.Bitmap("/images/game-bg.png");
+    this._refreshBg();
     stage.addChildAt(bgBmp, 0);
   },
 
-  _createPlayers: function() {
-    this._refreshPlayers();
+  _refreshBg: function() {
+    bgBmp.scaleX = bgBmp.scaleY = 1;
+    var bgBounds = bgBmp.getBounds();
+    var scaleW = this._width() / bgBounds.width;
+    var scaleH = this._height() / bgBounds.height;
+    bgBmp.scaleX = bgBmp.scaleY = Math.max(scaleW, scaleH);
   },
 
   _createDecks: function() {
@@ -212,8 +221,24 @@ Polymer({
   },
 
   _refreshDeck: function() {
-    decks.x = 5;
+    decks.x = 10;
     decks.y = this._height() / 2;
+  },
+
+  _createBlueBook: function() {
+    blueBook = new BlueBook();
+    this._refreshBlueBook();
+    stage.addChild(blueBook);
+  },
+
+  _refreshBlueBook: function() {
+    var bounds = blueBook.getBounds();
+    blueBook.x = this._width() - bounds.x - bounds.width - 10;
+    blueBook.y = this._height() - bounds.y - bounds.height - 10;
+  },
+
+  _createPlayers: function() {
+    this._refreshPlayers();
   },
 
   _refreshPlayers: function() {
