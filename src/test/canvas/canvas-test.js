@@ -11,6 +11,9 @@ $(function() {
   var availDcCards = [];
   shuffleDcCards();
 
+  var availInsurances = [];
+  shuffleInsurances();
+
   var canvas = document.createElement("dc-game-canvas");
   // canvas.debugMode = true;
   canvas.gameState = {
@@ -73,6 +76,8 @@ $(function() {
       newDeal();
     } else if(args[0] === "gdc") {
       giveDcCard(args[1]);
+    } else if(args[0] === "gi") {
+      giveInsurance(args[1]);
     } else {
       alert("illegal command: " + args[0]);
       return;
@@ -91,6 +96,11 @@ $(function() {
     for(i = 0; i < numPlayers * 4; ++i) {
       if(availCars.length === 0) shuffleCars();
       canvas.giveCarFromDeck(i % numPlayers, availCars.pop());
+    }
+
+    for(i = 0; i < numPlayers; ++i) {
+      if(availCars.length === 0) shuffleInsurances();
+      canvas.giveInsuranceFromDeck(i % numPlayers, availInsurances.pop());
     }
   }
 
@@ -128,12 +138,46 @@ $(function() {
     }
   }
 
+  function shuffleInsurances() {
+    availInsurances.push({
+      title: "COMPREHENSIVE",
+      description: "Protection against\n*FIRE, THEFT, COLLISION*",
+      value: "Collect List Price"
+    });
+    availInsurances.push({
+      title: "FIRE",
+      value: "Collect List, Price"
+    });
+    availInsurances.push({
+      title: "COLLISION",
+      value: "Collect List Price"
+    });
+    availInsurances.push({
+      title: "FLY BY NIGHT",
+      description: "Protection against\n*RANCID POPCORN*",
+      value: "Collect List Price"
+    });
+    availInsurances.push({
+      title: "FLY BY NIGHT",
+      description: "Protection against\n*LEAKY GALOSHES*",
+      value: "No Value"
+    });
+
+    for(var i = 0; i < 36; ++i) {
+      availInsurances.push(availInsurances[Math.floor(Math.random() * 4)]);
+    }
+  }
+
   function giveCar(playerIdx) {
     getCanvas().giveCarFromDeck(playerIdx, availCars.pop());
   }
 
   function giveDcCard(playerIdx) {
     getCanvas().giveDcCardFromDeck(playerIdx, availDcCards.pop());
+  }
+
+  function giveInsurance(playerIdx) {
+    getCanvas().giveInsuranceFromDeck(playerIdx, availInsurances.pop());
   }
 
   function setHandSize(playerIdx, n) {

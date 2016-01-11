@@ -33,28 +33,84 @@
         // Distance from register point to coords
         var relX = coords.x - dispObj.regX;
         var relY = dispObj.regY - coords.y; // opposite of cartesian
-        console.log(relX, relY);
         var distFromFocal = Math.sqrt(Math.pow(relX, 2) +
                                       Math.pow(relY, 2));
         if(relX < 0) distFromFocal = -distFromFocal;
 
         // Distance between the relative and normalized point
-        var pointDistance = distFromFocal * Math.sin(focalAngleRad) /
-                            Math.sin(oppositeRad);
+        var pointDistance;
+        if(oppositeRad !== 0)
+          pointDistance = distFromFocal * Math.sin(focalAngleRad) /
+                           Math.sin(oppositeRad);
+        else
+          pointDistance =  distFromFocal * 2;
 
         var totalRelativeRad = Math.asin(relY / distFromFocal);
 
         var xRad = (Math.PI / 2) - focalAngleRad - oppositeRad +
                     totalRelativeRad;
 
-        var x = Math.sin(xRad) * pointDistance + coords.x - dispObj.regX;
-        var y = Math.cos(xRad) * pointDistance + coords.y - dispObj.regY;
+        var x = Math.sin(xRad) * pointDistance +
+                 coords.x - dispObj.regX + dispObj.x;
+        var y = Math.cos(xRad) * pointDistance +
+                 coords.y - dispObj.regY + dispObj.y;
+
+        var rotation = coords.rotation || 0;
+        rotation += dispObj.rotation;
 
         return {
           x: x,
-          y: y//,
-          // rotation: dispObj.rotation
+          y: y,
+          rotation: rotation
         };
+      }
+
+      function denormalizeCoords(dispObj, coords) {
+        "use strict";
+        var focalAngleRad = dispObj.rotation * Math.PI / 180;
+        var oppositeRad = (Math.PI - focalAngleRad) / 2;
+
+        // Distance from register point to coords
+        var relX = coords.x - dispObj.x;
+        var relY = dispObj.y - coords.y; // opposite of cartesian
+        var distFromFocal = Math.sqrt(Math.pow(relX, 2) +
+                                      Math.pow(relY, 2));
+        if(relX < 0) distFromFocal = -distFromFocal;
+
+        // Distance between the relative and normalized point
+        var pointDistance;
+        if(oppositeRad !== 0)
+          pointDistance = distFromFocal * Math.sin(focalAngleRad) /
+                           Math.sin(oppositeRad);
+        else
+          pointDistance =  distFromFocal * 2;
+
+        var totalRelativeRad = Math.asin(relY / distFromFocal) + focalAngleRad;
+
+        var xRad = (Math.PI / 2) - focalAngleRad - oppositeRad +
+                    totalRelativeRad;
+
+        var x = -Math.sin(xRad) * pointDistance +
+                 coords.x + dispObj.regX - dispObj.x;
+        var y = -Math.cos(xRad) * pointDistance +
+                 coords.y + dispObj.regY - dispObj.y;
+
+        var rotation = coords.rotation || 0;
+        rotation -= dispObj.rotation;
+
+        return {
+          x: x,
+          y: y,
+          rotation: rotation
+        };
+      }
+
+      function r2d(rad) {
+        "use strict";
+        var deg = rad * 180 / Math.PI;
+        deg %= 360;
+        if (deg < 0) deg += 360;
+        return deg;
       }
 
       var con = new createjs.Container();
@@ -85,6 +141,20 @@
         .drawRect(0, 0, 20, 20);
       stage.addChild(newSq);
 
+      var stationarySq = new createjs.Shape();
+      stationarySq.graphics
+        .beginFill("#00F")
+        .drawRect(0, 0, 40, 40);
+      con.addChild(stationarySq);
+
+      var smStationarySq = new createjs.Shape();
+      smStationarySq.graphics
+        .beginFill("#F00")
+        .drawRect(0, 0, 20, 20);
+      smStationarySq.x = Math.random() * 500;
+      smStationarySq.y = Math.random() * 500;
+      stage.addChild(smStationarySq);
+
       stage.update();
 
       var sign = 2;
@@ -97,9 +167,14 @@
         // }
 
         var newCoords = normalizeCoords(con, { x: bigSq.x + 10, y: bigSq.y + 10 });
-        newSq.x = newCoords.x + con.x;
-        newSq.y = newCoords.y + con.y;
+        newSq.x = newCoords.x;
+        newSq.y = newCoords.y;
         newSq.rotation = con.rotation;
+
+        var newStCoords = denormalizeCoords(con, { x: smStationarySq.x - 10, y: smStationarySq.y - 10 });
+        stationarySq.x = newStCoords.x;
+        stationarySq.y = newStCoords.y;
+        stationarySq.rotation = newStCoords.rotation;
 
         stage.update();
       });

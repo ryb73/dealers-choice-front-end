@@ -53,7 +53,46 @@ function normalizeCoords(dispObj, coords) {
            coords.y - dispObj.regY + dispObj.y;
 
   var rotation = coords.rotation || 0;
-  rotation = rotation + dispObj.rotation;
+  rotation += dispObj.rotation;
+
+  return {
+    x: x,
+    y: y,
+    rotation: rotation
+  };
+}
+
+function denormalizeCoords(dispObj, coords) {
+  var focalAngleRad = dispObj.rotation * Math.PI / 180;
+  var oppositeRad = (Math.PI - focalAngleRad) / 2;
+
+  // Distance from register point to coords
+  var relX = coords.x - dispObj.x;
+  var relY = dispObj.y - coords.y; // opposite of cartesian
+  var distFromFocal = Math.sqrt(Math.pow(relX, 2) +
+                                Math.pow(relY, 2));
+  if(relX < 0) distFromFocal = -distFromFocal;
+
+  // Distance between the relative and normalized point
+  var pointDistance;
+  if(oppositeRad !== 0)
+    pointDistance = distFromFocal * Math.sin(focalAngleRad) /
+                     Math.sin(oppositeRad);
+  else
+    pointDistance =  distFromFocal * 2;
+
+  var totalRelativeRad = Math.asin(relY / distFromFocal) + focalAngleRad;
+
+  var xRad = (Math.PI / 2) - focalAngleRad - oppositeRad +
+              totalRelativeRad;
+
+  var x = -Math.sin(xRad) * pointDistance +
+           coords.x + dispObj.regX - dispObj.x;
+  var y = -Math.cos(xRad) * pointDistance +
+           coords.y + dispObj.regY - dispObj.y;
+
+  var rotation = coords.rotation || 0;
+  rotation -= dispObj.rotation;
 
   return {
     x: x,
@@ -162,6 +201,33 @@ Polymer({
     var qNewCard = decks.giveDcCard(dcCard, cardCoords, 500,
                                      this._isMe(userIdx));
     return playerBox.putDcCardInBlankSpace(qNewCard);
+  },
+
+  giveInsuranceFromDeck: function(userIdx, insurance) {
+    this._getPlayer(userIdx).insurances.push(insurance);
+
+    animationThrottler.requestAnim(
+      this._gifdImpl.bind(this, userIdx, insurance)
+    ).done();
+  },
+
+  _gifdImpl: function(userIdx, insurance) {
+    var user = this.gameState.users[userIdx];
+
+    if(this._isMe(userIdx)) {
+      // TODO
+    } else {
+      var insuranceAnimData = decks.getInsuranceToGive();
+
+      var cardCoords = insuranceAnimData.coords;
+      cardCoords.x += decks.x - decks.regX;
+      cardCoords.y += decks.y - decks.regY;
+
+      var playerBox = user.dispObjs.playerBox;
+      cardCoords = denormalizeCoords(playerBox, cardCoords);
+
+      return playerBox.giveInsurance(insuranceAnimData.insuranceDisp, cardCoords, 500);
+    }
   },
 
   // Determines whether the player at the given index
