@@ -99,7 +99,7 @@ $(function() {
     }
 
     for(i = 0; i < numPlayers; ++i) {
-      if(availCars.length === 0) shuffleInsurances();
+      if(availInsurances.length === 0) shuffleInsurances();
       canvas.giveInsuranceFromDeck(i % numPlayers, availInsurances.pop());
     }
   }

@@ -9,6 +9,6 @@
   "bitwise": true,
   "eqeqeq": true,
   "latedef": "nofunc",
-  "maxcomplexity": 5,
+  "maxcomplexity": 7,
   "newcap": false
 }
