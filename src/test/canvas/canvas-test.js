@@ -63,21 +63,21 @@ $(function() {
     /* jshint maxcomplexity: 10 */
     var args = cmd.split("/");
     if(args[0] === "rp") {
-      removePlayer(args[1]);
+      removePlayer(+args[1]);
     } else if(args[0] === "ap") {
       addPlayer();
     } else if(args[0] === "hs") {
-      setHandSize(args[1], args[2]);
+      setHandSize(+args[1], +args[2]);
     } else if(args[0] === "nc") {
-      setNumCars(args[1], args[2]);
+      setNumCars(+args[1], +args[2]);
     } else if(args[0] === "gc") {
-      giveCar(args[1]);
+      giveCar(+args[1]);
     } else if(args[0] === "nd") {
       newDeal();
     } else if(args[0] === "gdc") {
-      giveDcCard(args[1]);
+      giveDcCard(+args[1]);
     } else if(args[0] === "gi") {
-      giveInsurance(args[1]);
+      giveInsurance(+args[1]);
     } else {
       alert("illegal command: " + args[0]);
       return;

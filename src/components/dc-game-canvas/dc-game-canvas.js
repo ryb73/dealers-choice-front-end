@@ -10,11 +10,12 @@ var q                  = require("q"),
     CarFront           = gameUi.CarFront,
     DcCardFront        = gameUi.DcCardFront,
     BlueBook           = gameUi.BlueBook,
+    MyInsurances       = gameUi.MyInsurances,
     assets             = gameUi.assets,
     AnimationThrottler = require("./animation-throttler");
 
 var stage; // assume only one canvas per page
-var decks, blueBook, bgBmp;
+var decks, blueBook, bgBmp, myInsurances;
 var displayedCard;
 var animationThrottler = new AnimationThrottler();
 
@@ -42,7 +43,9 @@ function normalizeCoords(dispObj, coords) {
   else
     pointDistance =  distFromFocal * 2;
 
-  var totalRelativeRad = Math.asin(relY / distFromFocal);
+  var totalRelativeRad = 0;
+  if(distFromFocal !== 0)
+    totalRelativeRad = Math.asin(relY / distFromFocal);
 
   var xRad = (Math.PI / 2) - focalAngleRad - oppositeRad +
               totalRelativeRad;
@@ -81,7 +84,9 @@ function denormalizeCoords(dispObj, coords) {
   else
     pointDistance =  distFromFocal * 2;
 
-  var totalRelativeRad = Math.asin(relY / distFromFocal) + focalAngleRad;
+  var totalRelativeRad = 0;
+  if(distFromFocal !== 0)
+    totalRelativeRad = Math.asin(relY / distFromFocal) + focalAngleRad;
 
   var xRad = (Math.PI / 2) - focalAngleRad - oppositeRad +
               totalRelativeRad;
@@ -131,7 +136,7 @@ Polymer({
     if(this.loaded) {
       this._refreshDeck();
       this._refreshPlayers();
-      this._refreshBlueBook();
+      this._refreshRightHud();
       this._refreshBg();
       stage.update();
     }
@@ -214,18 +219,25 @@ Polymer({
   _gifdImpl: function(userIdx, insurance) {
     var user = this.gameState.users[userIdx];
 
+    var cardCoords;
     if(this._isMe(userIdx)) {
-      // TODO
+      cardCoords = myInsurances.makeSpaceForCard(500);
+      cardCoords = normalizeCoords(myInsurances, cardCoords);
+      cardCoords.x -= decks.x - decks.regX;
+      cardCoords.y -= decks.y - decks.regY;
+
+      var qNewCard = decks.giveInsurance(insurance, cardCoords, 500);
+      return myInsurances.putCardInBlankSpace(qNewCard);
     } else {
       var insuranceAnimData = decks.getInsuranceToGive();
 
-      var cardCoords = insuranceAnimData.coords;
+      // We'll get the coords with respoect to decks -- normalize them
+      cardCoords = insuranceAnimData.coords;
       cardCoords.x += decks.x - decks.regX;
       cardCoords.y += decks.y - decks.regY;
 
       var playerBox = user.dispObjs.playerBox;
       cardCoords = denormalizeCoords(playerBox, cardCoords);
-
       return playerBox.giveInsurance(insuranceAnimData.insuranceDisp, cardCoords, 500);
     }
   },
@@ -248,7 +260,7 @@ Polymer({
 
         this._createPlayers();
         this._createDecks();
-        this._createBlueBook();
+        this._createRightHud();
         stage.update();
       }.bind(this));
   },
@@ -268,8 +280,10 @@ Polymer({
 
   _createBackground: function() {
     bgBmp = new createjs.Bitmap("/images/game-bg.png");
-    this._refreshBg();
-    stage.addChildAt(bgBmp, 0);
+    bgBmp.image.addEventListener("load", function() {
+      this._refreshBg();
+      stage.addChildAt(bgBmp, 0);
+    }.bind(this));
   },
 
   _refreshBg: function() {
@@ -291,16 +305,23 @@ Polymer({
     decks.y = this._height() / 2;
   },
 
-  _createBlueBook: function() {
+  _createRightHud: function() {
     blueBook = new BlueBook();
-    this._refreshBlueBook();
+    myInsurances = new MyInsurances();
+
+    this._refreshRightHud();
+
     stage.addChild(blueBook);
+    stage.addChild(myInsurances);
   },
 
-  _refreshBlueBook: function() {
+  _refreshRightHud: function() {
     var bounds = blueBook.getBounds();
     blueBook.x = this._width() - bounds.x - bounds.width - 10;
     blueBook.y = this._height() - bounds.y - bounds.height - 10;
+
+    myInsurances.x = blueBook.x;
+    myInsurances.y = blueBook.y - 10;
   },
 
   _createPlayers: function() {
