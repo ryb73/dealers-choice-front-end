@@ -22,7 +22,7 @@ $(function() {
         name: "player1",
         player: {
           dcCards: [],
-          cars: [availCars.pop(), availCars.pop(), availCars.pop()],
+          cars: [], //[availCars.pop(), availCars.pop(), availCars.pop()],
           insurances: [],
         },
         dispObjs: {}
@@ -32,21 +32,21 @@ $(function() {
         name: "player2",
         player: {
           dcCards: [],
-          cars: [availCars.pop(), availCars.pop()],
+          cars: [], //[availCars.pop(), availCars.pop()],
           insurances: [],
         },
         dispObjs: {}
       },
 
-      {
-        name: "player3",
-        player: {
-          dcCards: [],
-          cars: [],
-          insurances: [],
-        },
-        dispObjs: {}
-      }
+      // {
+      //   name: "player3",
+      //   player: {
+      //     dcCards: [],
+      //     cars: [],
+      //     insurances: [],
+      //   },
+      //   dispObjs: {}
+      // }
     ]
   };
 
@@ -202,12 +202,12 @@ $(function() {
     getCanvas().removePlayerAtIndex(n);
   }
 
-  function addPlayer(n) {
+  function addPlayer() {
     getCanvas().addPlayer({
       name: "player" + (getCanvas().gameState.users.length+1),
       player: {
-        dcCards: ["","","","",""],
-        cars: ["", "", ""],
+        dcCards: [availDcCards.pop(), availDcCards.pop(), availDcCards.pop(), availDcCards.pop(), availDcCards.pop()],
+        cars: [availCars.pop(), availCars.pop(), availCars.pop()],
         insurances: ["", ""],
       }
     });

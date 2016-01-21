@@ -14,10 +14,12 @@ var q                  = require("q"),
     assets             = gameUi.assets,
     AnimationThrottler = require("./animation-throttler");
 
+var TRANSITION_TIME = 500;
+
 var stage; // assume only one canvas per page
 var decks, blueBook, bgBmp, myInsurances;
 var displayedCard;
-var animationThrottler = new AnimationThrottler();
+var animationThrottler = new AnimationThrottler(300);
 
 // Given an object and point relating to that object,
 // returns a set of coords representing the same point with
@@ -175,12 +177,12 @@ Polymer({
     // coords. The coords will be in relation to the
     // player box; we want them in relation to the decks.
     var playerBox = user.dispObjs.playerBox;
-    var carCoords = playerBox.makeSpaceForCar(500);
+    var carCoords = playerBox.makeSpaceForCar(TRANSITION_TIME);
     carCoords = normalizeCoords(playerBox, carCoords);
     carCoords.x -= decks.x - decks.regX;
     carCoords.y -= decks.y - decks.regY;
 
-    var qNewCard = decks.giveCar(car, carCoords, 500);
+    var qNewCard = decks.giveCar(car, carCoords, TRANSITION_TIME);
     return playerBox.putCarInBlankSpace(qNewCard);
   },
 
@@ -198,12 +200,12 @@ Polymer({
 
     // Make room for the new card
     var playerBox = user.dispObjs.playerBox;
-    var cardCoords = playerBox.makeSpaceForDcCard(500);
+    var cardCoords = playerBox.makeSpaceForDcCard(TRANSITION_TIME);
     cardCoords = normalizeCoords(playerBox, cardCoords);
     cardCoords.x -= decks.x - decks.regX;
     cardCoords.y -= decks.y - decks.regY;
 
-    var qNewCard = decks.giveDcCard(dcCard, cardCoords, 500,
+    var qNewCard = decks.giveDcCard(dcCard, cardCoords, TRANSITION_TIME,
                                      this._isMe(userIdx));
     return playerBox.putDcCardInBlankSpace(qNewCard);
   },
@@ -221,12 +223,12 @@ Polymer({
 
     var cardCoords;
     if(this._isMe(userIdx)) {
-      cardCoords = myInsurances.makeSpaceForCard(500);
+      cardCoords = myInsurances.makeSpaceForCard(TRANSITION_TIME);
       cardCoords = normalizeCoords(myInsurances, cardCoords);
       cardCoords.x -= decks.x - decks.regX;
       cardCoords.y -= decks.y - decks.regY;
 
-      var qNewCard = decks.giveInsurance(insurance, cardCoords, 500);
+      var qNewCard = decks.giveInsurance(insurance, cardCoords, TRANSITION_TIME);
       return myInsurances.putCardInBlankSpace(qNewCard);
     } else {
       var insuranceAnimData = decks.getInsuranceToGive();
@@ -238,7 +240,7 @@ Polymer({
 
       var playerBox = user.dispObjs.playerBox;
       cardCoords = denormalizeCoords(playerBox, cardCoords);
-      return playerBox.giveInsurance(insuranceAnimData.insuranceDisp, cardCoords, 500);
+      return playerBox.giveInsurance(insuranceAnimData.insuranceDisp, cardCoords, TRANSITION_TIME);
     }
   },
 

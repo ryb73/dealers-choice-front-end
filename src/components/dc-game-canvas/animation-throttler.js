@@ -11,7 +11,9 @@ var DELAY = 200;
 // of a situation where many animations would be requested
 // at once is at the beginning of the game when cards are
 // being dealt.
-function AnimationThrottler() {
+function AnimationThrottler(delay) {
+  if(!delay) delay = DELAY;
+
   // Anim is considered active if it's running or queued
   var currentDelay = 0;
 
@@ -20,7 +22,7 @@ function AnimationThrottler() {
     var result = q.delay(currentDelay)
       .thenResolve(func)
       .then(start);
-    currentDelay += DELAY;
+    currentDelay += delay;
     return result;
   }
   this.requestAnim = requestAnim;
@@ -37,7 +39,7 @@ function AnimationThrottler() {
   }
 
   function animFinished() {
-    currentDelay -= DELAY;
+    currentDelay -= delay;
   }
 }
 
