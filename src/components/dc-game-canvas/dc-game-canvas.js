@@ -9,6 +9,7 @@ var q                  = require("q"),
     LoadingSplash      = gameUi.LoadingSplash,
     CarFront           = gameUi.CarFront,
     DcCardFront        = gameUi.DcCardFront,
+    InsuranceFront     = gameUi.InsuranceFront,
     BlueBook           = gameUi.BlueBook,
     MyInsurances       = gameUi.MyInsurances,
     assets             = gameUi.assets,
@@ -309,7 +310,10 @@ Polymer({
 
   _createRightHud: function() {
     blueBook = new BlueBook();
+
     myInsurances = new MyInsurances();
+    myInsurances.on("card-mouseover", this._insuranceMouseOver.bind(this));
+    myInsurances.on("card-mouseout", this._removeDisplayedCard.bind(this));
 
     this._refreshRightHud();
 
@@ -363,20 +367,15 @@ Polymer({
     stage.addChildAt(playerBox, 1);
 
     playerBox.on("car-mouseover", this._carMouseOver.bind(this, idx));
-    playerBox.on("car-mouseout", this._carMouseOut.bind(this, idx));
+    playerBox.on("car-mouseout", this._removeDisplayedCard.bind(this));
     playerBox.on("dc-card-mouseover", this._dcCardMouseOver.bind(this, idx));
-    playerBox.on("dc-card-mouseout", this._dcCardMouseOut.bind(this, idx));
+    playerBox.on("dc-card-mouseout", this._removeDisplayedCard.bind(this));
 
     return playerBox;
   },
 
   _carMouseOver: function(userIdx, carEvent) {
     this._showCar(this._getPlayer(userIdx).cars[carEvent.carIndex]);
-  },
-
-  _carMouseOut: function(userIdx, carEvent) {
-    stage.removeChild(displayedCard);
-    displayedCard = null;
   },
 
   _dcCardMouseOver: function(userIdx, cardEvent) {
@@ -389,6 +388,15 @@ Polymer({
     displayedCard = null;
   },
 
+  _insuranceMouseOver: function(cardEvent) {
+    this._showInsurance(this._getPlayer(0).insurances[cardEvent.cardIndex]);
+  },
+
+  _removeDisplayedCard: function() {
+    stage.removeChild(displayedCard);
+    displayedCard = null;
+  },
+
   // Gets the player object for the specified user
   _getPlayer: function(userIdx) {
     return this.gameState.users[userIdx].player;
@@ -396,7 +404,7 @@ Polymer({
 
   _showCar: function(car) {
     if(displayedCard)
-      stage.removeChild(displayedCard);
+      this._removeDisplayedCard();
 
     displayedCard = new CarFront(car, true);
     this._positionDisplayedCard();
@@ -405,9 +413,18 @@ Polymer({
 
   _showDcCard: function(dcCard) {
     if(displayedCard)
-      stage.removeChild(displayedCard);
+      this._removeDisplayedCard();
 
     displayedCard = new DcCardFront(dcCard, true);
+    this._positionDisplayedCard();
+    stage.addChild(displayedCard);
+  },
+
+  _showInsurance: function(insurance) {
+    if(displayedCard)
+      this._removeDisplayedCard();
+
+    displayedCard = new InsuranceFront(insurance, true);
     this._positionDisplayedCard();
     stage.addChild(displayedCard);
   },

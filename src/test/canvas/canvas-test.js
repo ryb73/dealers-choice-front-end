@@ -141,12 +141,12 @@ $(function() {
   function shuffleInsurances() {
     availInsurances.push({
       title: "COMPREHENSIVE",
-      description: "Protection against\n*FIRE, THEFT, COLLISION*",
+      protection: "FIRE, THEFT, COLLISION",
       value: "Collect List Price"
     });
     availInsurances.push({
       title: "FIRE",
-      value: "Collect List, Price"
+      value: "Collect List Price"
     });
     availInsurances.push({
       title: "COLLISION",
@@ -154,17 +154,26 @@ $(function() {
     });
     availInsurances.push({
       title: "FLY BY NIGHT",
-      description: "Protection against\n*RANCID POPCORN*",
+      protection: "RANCID POPCORN",
       value: "Collect List Price"
     });
     availInsurances.push({
       title: "FLY BY NIGHT",
-      description: "Protection against\n*LEAKY GALOSHES*",
+      protection: "LEAKY GALOSHES",
+      value: "No Value"
+    });
+    availInsurances.push({
+      title: "Theft",
+      value: "Collect List Price"
+    });
+    availInsurances.push({
+      title: "FLY BY NIGHT",
+      protection: "Roving Bands of Chickens",
       value: "No Value"
     });
 
     for(var i = 0; i < 36; ++i) {
-      availInsurances.push(availInsurances[Math.floor(Math.random() * 4)]);
+      availInsurances.push(availInsurances[Math.floor(Math.random() * 7)]);
     }
   }
 
