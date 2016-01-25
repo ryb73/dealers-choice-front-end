@@ -163,16 +163,9 @@ Polymer({
     this.refresh();
   },
 
-  giveCarFromDeck: function(userIdx, car) {
-    this._getPlayer(userIdx).cars.push(car);
-
-    animationThrottler.requestAnim(
-      this._gcfdImpl.bind(this, userIdx, car)
-    ).done();
-  },
-
-  _gcfdImpl: function(userIdx, car) {
+  giveCarFromDeck: animated(function(userIdx, car) {
     var user = this.gameState.users[userIdx];
+    user.player.cars.push(car);
 
     // Make room for the new car and get the new car's
     // coords. The coords will be in relation to the
@@ -185,19 +178,12 @@ Polymer({
 
     var qNewCard = decks.giveCar(car, carCoords, TRANSITION_TIME);
     return playerBox.putCarInBlankSpace(qNewCard);
-  },
-
-  giveDcCardFromDeck: function(userIdx, dcCard) {
-    this._getPlayer(userIdx).dcCards.push(dcCard);
-
-    animationThrottler.requestAnim(
-      this._gdcfdImpl.bind(this, userIdx, dcCard)
-    ).done();
-  },
+  }),
 
   //TODO: this looks very similar to giveCarFromDeck. refactor?
-  _gdcfdImpl: function(userIdx, dcCard) {
+  giveDcCardFromDeck: animated(function(userIdx, dcCard) {
     var user = this.gameState.users[userIdx];
+    user.player.dcCards.push(dcCard);
 
     // Make room for the new card
     var playerBox = user.dispObjs.playerBox;
@@ -209,18 +195,11 @@ Polymer({
     var qNewCard = decks.giveDcCard(dcCard, cardCoords, TRANSITION_TIME,
                                      this._isMe(userIdx));
     return playerBox.putDcCardInBlankSpace(qNewCard);
-  },
+  }),
 
-  giveInsuranceFromDeck: function(userIdx, insurance) {
-    this._getPlayer(userIdx).insurances.push(insurance);
-
-    animationThrottler.requestAnim(
-      this._gifdImpl.bind(this, userIdx, insurance)
-    ).done();
-  },
-
-  _gifdImpl: function(userIdx, insurance) {
+  giveInsuranceFromDeck: animated(function(userIdx, insurance) {
     var user = this.gameState.users[userIdx];
+    user.player.insurances.push(insurance);
 
     var cardCoords;
     if(this._isMe(userIdx)) {
@@ -243,7 +222,7 @@ Polymer({
       cardCoords = denormalizeCoords(playerBox, cardCoords);
       return playerBox.giveInsurance(insuranceAnimData.insuranceDisp, cardCoords, TRANSITION_TIME);
     }
-  },
+  }),
 
   // Determines whether the player at the given index
   // is the current (i.e. local) player
@@ -501,3 +480,13 @@ Polymer({
     return this.$.gameCanvas.height;
   }
 });
+
+function animated(fn) {
+  return function() {
+    var fnArgs = Array.prototype.slice.call(arguments, 0);
+    var bindArgs = [ this ].concat(fnArgs);
+    animationThrottler
+      .requestAnim(fn.bind.apply(fn, bindArgs))
+      .done();
+  };
+}
