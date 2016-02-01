@@ -171,6 +171,6 @@ function buildHtml(fromDir, toDir, prodMode) {
   return deferred.promise;
 }
 
-gulp.task("clean", function(cb) {
-  del([ BUILD_DIR, BUILD_DEV_DIR ], cb);
+gulp.task("clean", function() {
+  return del([ BUILD_DIR, BUILD_DEV_DIR ]);
 });
