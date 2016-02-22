@@ -3,11 +3,10 @@
 <dom-module id="game-list">
   <template>
     <template is="dom-repeat" items="{{games}}">
-      <div class="game-list-game">
+      <div class="game-list-game" data-game-id$="{{item.id}}" on-click="_joinGame">
         <div class="game-list-players">
           <template is="dom-repeat" items="{{item.users}}">
-            <img src$="{{item.imgSrc}}" alt$="{{item.name}}"
-                 title$="{{item.name}}">
+            <img src$="{{item.imgSrc}}" alt$="{{item.name}}" title$="{{item.name}}">
           </template>
 
           <span class="game-list-name">{{item.name}}</span>
@@ -15,11 +14,11 @@
       </div>
     </template>
 
-    <div id="newGame">+ New Game</div>
+    <div class="game-list-game" on-click="_newGame">+ New Game</div>
   </template>
 
   <style>
-    .game-list-game, #newGame {
+    .game-list-game {
       float: left;
       width: 150px;
       height: 150px;
@@ -29,8 +28,13 @@
       border: 1px solid #AAA;
     }
 
-    .game-list-game:hover, #newGame:hover {
+    .game-list-game:hover {
       border-color: #555;
+    }
+
+    :host {
+      display: block;
+      overflow: hidden;
     }
   </style>
 
@@ -49,13 +53,17 @@
 
         attached: function() {
           if(!this.games) this.games = [];
-
-          this.$.newGame.addEventListener("click",
-            this._newGame.bind(this), false);
         },
 
         _newGame: function() {
           this.fire("new-game");
+        },
+
+        _joinGame: function(e) {
+          var gameId = $(e.target).data("game-id");
+          console.log(gameId);
+          console.log($(e.target).html());
+          this.fire("join-game", gameId);
         }
       });
     }());

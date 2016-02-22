@@ -1,3 +1,4 @@
+/* jshint strict: global */
 "use strict";
 
 var q = require("q");
@@ -5,9 +6,11 @@ var q = require("q");
 function loadUser(userId) {
   var deferred = q.defer();
 
+  console.log("loadUser", userId);
+
   FB.api("/" + userId,
     {
-      fields: [ "id", "first_name", "name", "picture" ]
+      fields: [ "id", "name", "picture" ]
     },
     function(response) {
       if(response.error) {
@@ -42,10 +45,6 @@ function User($response) {
     imgSrc: {
       enumerable: true,
       get: function() { return imgSrc; }
-    },
-    firstName: {
-      enumerable: true,
-      get: function() { return firstName; }
     }
   });
 }

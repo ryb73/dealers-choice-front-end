@@ -24,8 +24,7 @@ $(function() {
           dcCards: [],
           cars: [], //[availCars.pop(), availCars.pop(), availCars.pop()],
           insurances: [],
-        },
-        dispObjs: {}
+        }
       },
 
       {
@@ -34,8 +33,7 @@ $(function() {
           dcCards: [],
           cars: [], //[availCars.pop(), availCars.pop()],
           insurances: [],
-        },
-        dispObjs: {}
+        }
       },
 
       // {

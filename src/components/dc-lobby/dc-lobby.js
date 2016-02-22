@@ -1,5 +1,6 @@
-"use strict";
+/* jshint strict: global */
 /* global Polymer, DcShell */
+"use strict";
 
 var dcConstants  = require("dc-constants"),
     MessageType  = dcConstants.MessageType,
@@ -26,12 +27,18 @@ Polymer({
     _messages: {
       type: Array,
       value: null
+    },
+
+    _games: {
+      type: Array,
+      value: null
     }
   },
 
   attached: function() {
     this._users = [];
     this._messages = [];
+    this._games = [];
 
     this.$.logout.addEventListener("click", function() {
       DcShell.tryLogOut();
@@ -84,7 +91,17 @@ Polymer({
 
   _listGames: function(response) {
     console.log("listing games");
-    console.log(response);
+
+    response.forEach(function(game) {
+      var qUsers = _(game.users).map('id')
+        .map(loadUser);
+
+      q.all(qUsers.value())
+        .done(function(fbUsers) {
+          _.merge(game.users, fbUsers);
+          this.push("_games", game);
+        }.bind(this));
+    }.bind(this));
   },
 
   _onRegister: function(userIds) {
@@ -188,12 +205,29 @@ Polymer({
     socket.emit("action", msg, this._gameCreated.bind(this));
   },
 
+  _joinGame: function(e) {
+    var gameId = e.detail;
+    var msg = { cmd: MessageType.JoinGame, id: gameId };
+    socket.emit("action", msg, this._joinedGame.bind(this));
+  },
+
   _gameCreated: function(response) {
-    console.log("create game result: ", response.result);
+    console.log("create game result: ", response);
     if(response.result !== ResponseCode.CreateOk) {
       alert("Error creating game:\n\n" + JSON.stringify(response));
+      return;
     }
 
-    DcShell.enterGameRoom({});
+    DcShell.enterGameRoom(response.gameState);
+  },
+
+  _joinedGame: function(response) {
+    console.log("joined game", response);
+    if(response.result !== ResponseCode.JoinOk) {
+      alert("Error joining game:\n\n" + JSON.stringify(response));
+      return;
+    }
+
+    DcShell.enterGameRoom(response.gameState);
   }
 });

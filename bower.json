@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "EaselJS": "easeljs#0.8.1",
-    "polymer": "~1.1.0",
+    "polymer": "^1.2.4",
     "TweenJS": "0.6.1",
     "PreloadJS": "0.6.1"
   }

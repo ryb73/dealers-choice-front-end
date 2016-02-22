@@ -240,6 +240,10 @@ Polymer({
       .done(function() {
         this.loaded = true;
 
+        this.gameState.users.forEach(function(user) {
+          user.dispObjs = {};
+        });
+
         this._createPlayers();
         this._createDecks();
         this._createRightHud();
@@ -341,8 +345,7 @@ Polymer({
   },
 
   _addNewPlayerToStage: function(user, idx) {
-    var playerBox = user.dispObjs.playerBox =
-      new PlayerBox(user, idx === 0, this.debugMode);
+    var playerBox = user.dispObjs.playerBox = new PlayerBox(user, idx === 0, this.debugMode);
     stage.addChildAt(playerBox, 1);
 
     playerBox.on("car-mouseover", this._carMouseOver.bind(this, idx));
