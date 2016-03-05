@@ -6,7 +6,11 @@
   <template>
     <img src="/images/logo.png">
 
-    <button id="logout">Log Out</button>
+    <nav>
+      <button id="logout">Log Out</button>
+      <button id="stats">Stats</button>
+    </nav>
+
     <div id="connectingIndicator"></div>
 
     <game-list id="game-list" games="{{_games}}" on-new-game="_newGame" on-join-game="_joinGame">
@@ -28,7 +32,36 @@
       height: 100%;
     }
 
-    :host chat-box {
+    img {
+      display: block;
+      margin: auto;
+    }
+
+    nav {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 10px;
+    }
+
+    nav button, nav button:active {
+      float: right;
+      font-size: 1.25em;
+      font-weight: bold;
+      color: #CCC;
+      text-transform: lowercase;
+
+      background: none;
+      border: none;
+      outline: 0;
+      cursor: pointer;
+    }
+
+    nav button:hover {
+      color: #999;
+    }
+
+    chat-box {
       width: 50%;
 
       --chat-box-pending: {
