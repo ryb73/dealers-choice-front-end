@@ -33,3 +33,5 @@ build
 build-dev
 
 *.ttf
+
+.DS_Store

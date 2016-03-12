@@ -13,28 +13,32 @@
 
     <div id="connectingIndicator"></div>
 
-    <game-list id="game-list" games="{{_games}}" on-new-game="_newGame" on-join-game="_joinGame">
-    </game-list>
+    <div id="lobby-content">
+      <game-list id="game-list" games="{{_games}}" on-new-game="_newGame" on-join-game="_joinGame">
+      </game-list>
 
-    <chat-box id="chat" users="{{_users}}" messages="{{_messages}}"
-      on-send="_sendMsg">
-    </chat-box>
+      <!-- <chat-box id="chat" users="{{_users}}" messages="{{_messages}}"
+        on-send="_sendMsg">
+      </chat-box> -->
+    </div>
   </template>
 
   <style>
     :host {
+      position: relative;
       display: block;
 
       /* https://css-tricks.com/tinted-images-multiple-backgrounds/ */
       background:
           linear-gradient(rgba(255, 255, 255, 0.0), rgba(255, 255, 255, 0.0)),
-          url("/images/lobby-bg.jpg") center top;
+          url("/images/lobby-bg.jpg") center 200px no-repeat;
       height: 100%;
     }
 
     img {
       display: block;
       margin: auto;
+      padding: 30px; /* padding instead of margin because the margin would collapse with parent */
     }
 
     nav {
@@ -61,8 +65,26 @@
       color: #999;
     }
 
+    #lobby-content {
+      margin: auto;
+    }
+
+    game-list {
+      /*width: 50%;*/
+      margin: auto;
+
+      /*background-color: rgba(255, 220, 210, 0.95);*/
+      --game-bg: rgba(117, 82, 58, 0.02);
+      --game-bg-hover: rgba(117, 82, 58, 0.03);
+      --game-border: rgba(117, 82, 58, 0.15);
+      --game-border-hover: rgba(245, 114, 36, 0.15);
+    }
+
     chat-box {
-      width: 50%;
+      /*width: 50%;*/
+      margin: auto;
+
+      /*background-color: rgba(255, 255, 255, 0.5);*/
 
       --chat-box-pending: {
         background-color: #CCC;

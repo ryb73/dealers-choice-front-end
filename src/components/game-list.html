@@ -12,29 +12,53 @@
           <span class="game-list-name">{{item.name}}</span>
         </div>
       </div>
-    </template>
 
-    <div class="game-list-game" on-click="_newGame">+ New Game</div>
+      <div class="game-list-game" on-click="_newGame">
+        <p class="plus">+</p>
+        <p class="subtext">New Game</p>
+      </div>
+    </template>
   </template>
 
   <style>
     .game-list-game {
-      float: left;
+      display: inline-block;
+      vertical-align: top;
       width: 150px;
       height: 150px;
       margin: 15px;
 
       cursor: pointer;
-      border: 1px solid #AAA;
+      background-color: var(--game-bg);
+      border: 1px solid var(--game-border);
+      color: #777;
+
+      outline: 0 #fff;
+      transition-property: outline-color, background-color, color;
+      transition-duration: 0.1s;
+    }
+
+    .game-list-game .plus {
+      margin-top: calc(75px - 0.75em);
+      margin-bottom: 0;
+      font-size: 24px;
+    }
+
+    .game-list-game .subtext {
+      margin: 0;
+      font-size: 14px;
     }
 
     .game-list-game:hover {
-      border-color: #555;
+      outline: 1px solid var(--game-border-hover);
+      background-color: var(--game-bg-hover);
+      color: #666;
     }
 
     :host {
       display: block;
       overflow: hidden;
+      text-align: center;
     }
   </style>
 
