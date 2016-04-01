@@ -213,8 +213,8 @@ $(function() {
     getCanvas().addPlayer({
       name: "player" + (getCanvas().gameState.users.length+1),
       player: {
-        dcCards: [availDcCards.pop(), availDcCards.pop(), availDcCards.pop(), availDcCards.pop(), availDcCards.pop()],
-        cars: [availCars.pop(), availCars.pop(), availCars.pop()],
+        dcCards: [],
+        cars: [],
         insurances: ["", ""],
       }
     });

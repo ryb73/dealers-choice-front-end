@@ -14,9 +14,9 @@
     "tests"
   ],
   "dependencies": {
-    "EaselJS": "easeljs#0.8.1",
-    "polymer": "^1.2.4",
-    "TweenJS": "0.6.1",
-    "PreloadJS": "0.6.1"
+    "EaselJS": "easeljs#0.8.2",
+    "polymer": "1.4.0",
+    "TweenJS": "0.6.2",
+    "PreloadJS": "0.6.2"
   }
 }
