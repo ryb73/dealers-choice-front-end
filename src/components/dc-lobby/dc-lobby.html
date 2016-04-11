@@ -1,26 +1,28 @@
 <link rel="import" href="/components/polymer/polymer.html">
 <link rel="import" href="/components/chat-box.html">
 <link rel="import" href="/components/game-list.html">
+<link rel="import" href="/components/pending-game.html">
+<link rel="import" href="/components/neon-animation/neon-animated-pages.html">
 
 <dom-module id="dc-lobby">
   <template>
     <img src="/images/logo.png">
 
     <nav>
-      <button id="logout">Log Out</button>
-      <button id="stats">Stats</button>
+      <button id="logout">log out</button>
+      <button id="stats">stats</button>
     </nav>
 
     <div id="connectingIndicator"></div>
 
-    <div id="lobby-content">
-      <game-list id="game-list" games="{{_games}}" on-new-game="_newGame" on-join-game="_joinGame">
-      </game-list>
-
-      <!-- <chat-box id="chat" users="{{_users}}" messages="{{_messages}}"
-        on-send="_sendMsg">
-      </chat-box> -->
-    </div>
+    <template is="dom-if" if="{{_connected}}">
+      <div id="lobby-content">
+        <neon-animated-pages id="gamePages" selected={{_inGame}}>
+          <game-list id="game-list" games="{{_games}}" on-new-game="_newGame" on-join-game="_joinGame"></game-list>
+          <pending-game></pending-game>
+        </neon-animated-pages>
+      </div>
+    </template>
   </template>
 
   <style>
@@ -53,7 +55,6 @@
       font-size: 1.25em;
       font-weight: bold;
       color: #CCC;
-      text-transform: lowercase;
 
       background: none;
       border: none;
@@ -69,26 +70,31 @@
       margin: auto;
     }
 
-    game-list {
-      /*width: 50%;*/
-      margin: auto;
+    neon-animated-pages {
+      min-height: 200px
+    }
 
-      /*background-color: rgba(255, 220, 210, 0.95);*/
+    game-list {
+      margin: 0 auto;
+
       --game-bg: rgba(117, 82, 58, 0.02);
       --game-bg-hover: rgba(117, 82, 58, 0.03);
       --game-border: rgba(117, 82, 58, 0.15);
       --game-border-hover: rgba(245, 114, 36, 0.15);
     }
 
-    chat-box {
-      /*width: 50%;*/
-      margin: auto;
+    pending-game {
+      width: 300px;
+      height: 150px;
+      margin: 15px auto;
 
-      /*background-color: rgba(255, 255, 255, 0.5);*/
+      --game-bg: rgba(117, 82, 58, 0.02);
+      --game-border: rgba(117, 82, 58, 0.15);
+    }
 
-      --chat-box-pending: {
-        background-color: #CCC;
-      };
+    #connectingIndicator {
+      padding: 100px;
+      text-align: center;
     }
   </style>
 

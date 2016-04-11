@@ -1,4 +1,6 @@
 <link rel="import" href="/components/polymer/polymer.html">
+<link rel="import" href="/components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="/components/neon-animation/neon-animations.html">
 
 <dom-module id="game-list">
   <template>
@@ -12,12 +14,12 @@
           <span class="game-list-name">{{item.name}}</span>
         </div>
       </div>
-
-      <div class="game-list-game" on-click="_newGame">
-        <p class="plus">+</p>
-        <p class="subtext">New Game</p>
-      </div>
     </template>
+
+    <div class="game-list-game" on-click="_newGame">
+      <p class="plus">+</p>
+      <p class="subtext">New Game</p>
+    </div>
   </template>
 
   <style>
@@ -68,10 +70,30 @@
 
       Polymer({
         is: "game-list",
+        behaviors: [
+          Polymer.NeonAnimatableBehavior
+        ],
+
         properties: {
           games: {
             type: Array,
             value: null
+          },
+
+          animationConfig: {
+            value: function() {
+              return {
+                'entry': {
+                  name: 'fade-in-animation',
+                  node: this
+                },
+
+                'exit': {
+                  name: 'fade-out-animation',
+                  node: this
+                }
+              };
+            }
           }
         },
 
@@ -84,9 +106,7 @@
         },
 
         _joinGame: function(e) {
-          var gameId = $(e.target).data("game-id");
-          console.log(gameId);
-          console.log($(e.target).html());
+          var gameId = $(e.currentTarget).data("game-id");
           this.fire("join-game", gameId);
         }
       });

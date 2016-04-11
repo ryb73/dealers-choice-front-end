@@ -1,0 +1,58 @@
+<link rel="import" href="/components/polymer/polymer.html">
+<link rel="import" href="/components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="/components/neon-animation/neon-animations.html">
+
+<dom-module id="pending-game">
+  <template>
+      {{game.name}}
+      <div class="player-list">
+        <template is="dom-repeat" items="{{game.users}}">
+          <img src$="{{item.imgSrc}}" alt$="{{item.name}}" title$="{{item.name}}">
+        </template>
+      </div>
+  </template>
+
+  <style>
+    :host {
+      background-color: var(--game-bg);
+      border: 1px solid var(--game-border);
+      color: #777;
+    }
+  </style>
+
+  <script>
+    (function() {
+      "use strict";
+
+      Polymer({
+        is: "pending-game",
+        behaviors: [
+          Polymer.NeonAnimatableBehavior
+        ],
+
+        properties: {
+          animationConfig: {
+            value: function() {
+              return {
+                'entry': {
+                  name: 'fade-in-animation',
+                  node: this
+                },
+
+                'exit': {
+                  name: 'fade-out-animation',
+                  node: this
+                }
+              };
+            }
+          },
+
+          game: Object
+        },
+
+        attached: function() {
+        }
+      });
+    }());
+  </script>
+</dom-module>

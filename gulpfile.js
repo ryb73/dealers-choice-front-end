@@ -63,6 +63,21 @@ function copyVendor(buildDir) {
     doCopy([BOWER_DIR + "polymer/*.html"],
            buildDir + "components/polymer"),
 
+    doCopy([BOWER_DIR + "neon-animation/**"],
+           buildDir + "components/neon-animation"),
+
+    doCopy([BOWER_DIR + "iron-resizable-behavior/**"],
+           buildDir + "components/iron-resizable-behavior"),
+
+    doCopy([BOWER_DIR + "iron-selector/**"],
+           buildDir + "components/iron-selector"),
+
+    doCopy([BOWER_DIR + "iron-meta/**"],
+           buildDir + "components/iron-meta"),
+
+    doCopy([BOWER_DIR + "web-animations-js/**"],
+           buildDir + "components/web-animations-js"),
+
     doCopy([BOWER_DIR + "EaselJS/lib/**.js"],
            buildDir + "scripts/easel"),
 

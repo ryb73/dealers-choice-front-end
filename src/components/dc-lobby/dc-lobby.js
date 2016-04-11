@@ -32,6 +32,13 @@ Polymer({
     _games: {
       type: Array,
       value: null
+    },
+
+    _connected: Boolean,
+
+    _inGame: {
+      type: Number,
+      value: 0
     }
   },
 
@@ -42,7 +49,7 @@ Polymer({
 
     this.$.logout.addEventListener("click", function() {
       DcShell.tryLogOut();
-    });
+    }.bind(this));
 
     this._showConnectingIndicator("Connecting...");
 
@@ -58,10 +65,12 @@ Polymer({
   _showConnectingIndicator: function(label) {
     this.$.connectingIndicator.innerHTML = label;
     this.$.connectingIndicator.style.display = "";
+    this._connected = false;
   },
 
   _hideConnectingIndicator: function() {
     this.$.connectingIndicator.style.display = "none";
+    this._connected = true;
   },
 
   _onConnect: function() {
@@ -90,18 +99,23 @@ Polymer({
   },
 
   _listGames: function(response) {
-    console.log("listing games");
+    console.log("listing games", response);
 
-    response.forEach(function(game) {
-      var qUsers = _(game.users).map('id')
-        .map(loadUser);
+    q.all(response.map(this._denormalizeGameDescription))
+      .done(function(gameDescriptions) {
+        this._games = gameDescriptions;
+      }.bind(this));
+  },
 
-      q.all(qUsers.value())
-        .done(function(fbUsers) {
-          _.merge(game.users, fbUsers);
-          this.push("_games", game);
-        }.bind(this));
-    }.bind(this));
+  _denormalizeGameDescription: function(gameDescription) {
+    var qUsers = _(gameDescription.users).map('id')
+      .map(loadUser);
+
+    return q.all(qUsers.value())
+      .then(function(fbUsers) {
+        _.merge(gameDescription.users, fbUsers);
+        return gameDescription;
+      });
   },
 
   _onRegister: function(userIds) {
@@ -218,7 +232,11 @@ Polymer({
       return;
     }
 
-    DcShell.enterGameRoom(response.gameState);
+    this._denormalizeGameDescription(response.gameDescription)
+      .done(function(gameDescription) {
+        this._inGame = 1;
+        this.$$("pending-game").game = gameDescription;
+      }.bind(this));
   },
 
   _joinedGame: function(response) {
@@ -228,6 +246,14 @@ Polymer({
       return;
     }
 
-    DcShell.enterGameRoom(response.gameState);
+    this._denormalizeGameDescription(response.gameDescription)
+      .done(function(gameDescription) {
+        this._inGame = 1;
+        this.$$("pending-game").game = gameDescription;
+      }.bind(this));
+  },
+
+  _showPendingGame: function() {
+
   }
 });
