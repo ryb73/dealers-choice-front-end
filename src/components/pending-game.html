@@ -35,14 +35,24 @@
             value: function() {
               return {
                 'entry': {
-                  name: 'fade-in-animation',
-                  node: this
+                  name: 'hero-animation',
+                  toPage: this,
+                  id: "hero",
+                  timing: { duration: 5000 }
                 },
 
                 'exit': {
                   name: 'fade-out-animation',
                   node: this
                 }
+              };
+            }
+          },
+
+          sharedElements: {
+            value: function() {
+              return {
+                hero: this
               };
             }
           },

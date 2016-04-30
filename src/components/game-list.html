@@ -84,16 +84,27 @@
             value: function() {
               return {
                 'entry': {
-                  name: 'fade-in-animation',
-                  node: this
+                  name: 'hero-animation',
+                  toPage: this,
+                  id: "hero"
                 },
 
-                'exit': {
-                  name: 'fade-out-animation',
-                  node: this
-                }
+                'exit': [{
+                  name: 'hero-animation',
+                  fromPage: this,
+                  id: "hero",
+                  timing: { duration: 5000 }
+                }, {
+                  name: "fade-out-animation",
+                  node: this,
+                  timing: { duration: 5000 }
+                }]
               };
             }
+          },
+
+          sharedElements: {
+            value: null
           }
         },
 
@@ -101,11 +112,19 @@
           if(!this.games) this.games = [];
         },
 
-        _newGame: function() {
+        _newGame: function(e) {
+          this.sharedElements = {
+            hero: e.currentTarget
+          };
+
           this.fire("new-game");
         },
 
         _joinGame: function(e) {
+          this.sharedElements = {
+            hero: e.currentTarget
+          };
+
           var gameId = $(e.currentTarget).data("game-id");
           this.fire("join-game", gameId);
         }
