@@ -17,14 +17,14 @@
   },
   "homepage": "https://github.com/ryb73/dealers-choice-front-end",
   "devDependencies": {
-    "bower": "^1.3.12",
-    "browserify": "13.0.0",
+    "bower": "1.7.9",
+    "browserify": "13.0.1",
     "del": "2.2.0",
     "globby": "^2.1.0",
     "gulp": "3.9.1",
     "gulp-debug": "^2.1.2",
-    "gulp-if": "^1.2.5",
-    "gulp-less": "^3.0.2",
+    "gulp-if": "2.0.1",
+    "gulp-less": "3.1.0",
     "gulp-minify-css": "1.2.4",
     "gulp-minify-html": "1.0.6",
     "gulp-rename": "^1.2.0",
@@ -35,8 +35,8 @@
   },
   "dependencies": {
     "evemit": "^1.0.2",
-    "jquery": "2.2.2",
+    "jquery": "2.2.3",
     "lodash": "^3.10.1",
-    "socket.io-client": "^1.3.5"
+    "socket.io-client": "1.4.6"
   }
 }
