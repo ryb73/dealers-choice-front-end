@@ -4,7 +4,7 @@
 
 <dom-module id="pending-game">
   <template>
-      {{game.name}}
+      <span id="gameName">{{game.name}}</span>
       <div class="player-list">
         <template is="dom-repeat" items="{{game.users}}">
           <img src$="{{item.imgSrc}}" alt$="{{item.name}}" title$="{{item.name}}">
@@ -35,10 +35,8 @@
             value: function() {
               return {
                 'entry': {
-                  name: 'hero-animation',
-                  toPage: this,
-                  id: "hero",
-                  timing: { duration: 5000 }
+                  name: 'fade-in-animation',
+                  node: this
                 },
 
                 'exit': {
@@ -51,8 +49,10 @@
 
           sharedElements: {
             value: function() {
+              console.log(this.$$("#gameName"));
               return {
-                hero: this
+                hero: this,
+                gameName: this.$$("#gameName")
               };
             }
           },

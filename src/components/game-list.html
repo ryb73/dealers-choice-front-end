@@ -10,9 +10,9 @@
           <template is="dom-repeat" items="{{item.users}}">
             <img src$="{{item.imgSrc}}" alt$="{{item.name}}" title$="{{item.name}}">
           </template>
-
-          <span class="game-list-name">{{item.name}}</span>
         </div>
+
+        <span class="game-list-name">{{item.name}}</span>
       </div>
     </template>
 
@@ -89,16 +89,10 @@
                   id: "hero"
                 },
 
-                'exit': [{
-                  name: 'hero-animation',
-                  fromPage: this,
-                  id: "hero",
-                  timing: { duration: 5000 }
-                }, {
+                'exit': {
                   name: "fade-out-animation",
-                  node: this,
-                  timing: { duration: 5000 }
-                }]
+                  node: this
+                }
               };
             }
           },
@@ -114,15 +108,18 @@
 
         _newGame: function(e) {
           this.sharedElements = {
-            hero: e.currentTarget
+            hero: e.currentTarget,
+            gameName: $(e.currentTarget).children(".subtext")[0]
           };
 
           this.fire("new-game");
         },
 
         _joinGame: function(e) {
+          console.log($(e.currentTarget).children(".game-list-name")[0]);
           this.sharedElements = {
-            hero: e.currentTarget
+            hero: e.currentTarget,
+            gameName: $(e.currentTarget).children(".game-list-name")[0]
           };
 
           var gameId = $(e.currentTarget).data("game-id");
