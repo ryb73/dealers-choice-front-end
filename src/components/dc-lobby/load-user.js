@@ -10,7 +10,7 @@ function loadUser(userId) {
 
   FB.api("/" + userId,
     {
-      fields: [ "id", "name", "picture" ]
+      fields: [ "id", "name", "picture.width(100).height(100)" ]
     },
     function(response) {
       if(response.error) {

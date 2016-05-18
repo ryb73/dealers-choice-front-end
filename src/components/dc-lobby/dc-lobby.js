@@ -148,6 +148,12 @@ Polymer({
       case MessageType.ChatSent:
         this._receivedChat(msg);
         break;
+      case MessageType.PendingGameUpdated:
+        this._pendingGameUpdated(msg);
+        break;
+      case MessageType.LobbyUpdated:
+        this._listGames(msg.games);
+        break;
       default:
         console.log("Unexpected message type: " + msg.cmd);
     }
@@ -236,6 +242,7 @@ Polymer({
       .done(function(gameDescription) {
         this._inGame = 1;
         this.$$("pending-game").game = gameDescription;
+        this.$$("pending-game").isMyGame = true;
       }.bind(this));
   },
 
@@ -250,10 +257,21 @@ Polymer({
       .done(function(gameDescription) {
         this._inGame = 1;
         this.$$("pending-game").game = gameDescription;
+        this.$$("pending-game").isMyGame = false;
       }.bind(this));
   },
 
-  _showPendingGame: function() {
+  _leaveGame: function() {
+    socket.emit("action", { cmd: MessageType.Leave }, function() {
+      this._inGame = 0;
+      this._getGameList();
+    }.bind(this));
+  },
 
+  _pendingGameUpdated: function(msg) {
+    this._denormalizeGameDescription(msg.gameDescription)
+      .done(function(gameDescription) {
+        this.$$("pending-game").game = gameDescription;
+      }.bind(this));
   }
 });

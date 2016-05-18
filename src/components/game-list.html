@@ -24,10 +24,12 @@
 
   <style>
     .game-list-game {
+      position: relative;
       display: inline-block;
       vertical-align: top;
       width: 150px;
       height: 150px;
+      padding: 10px;
       margin: 15px;
 
       cursor: pointer;
@@ -38,6 +40,14 @@
       outline: 0 #fff;
       transition-property: outline-color, background-color, color;
       transition-duration: 0.1s;
+    }
+
+    .game-list-name {
+       position: absolute;
+       bottom: 0;
+       left: 0;
+       width: 100%;
+       padding-bottom: inherit;
     }
 
     .game-list-game .plus {
@@ -55,6 +65,11 @@
       outline: 1px solid var(--game-border-hover);
       background-color: var(--game-bg-hover);
       color: #666;
+    }
+
+    .game-list-players img {
+      width: auto;
+      height: 50px;
     }
 
     :host {

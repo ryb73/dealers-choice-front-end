@@ -4,19 +4,47 @@
 
 <dom-module id="pending-game">
   <template>
-      <span id="gameName">{{game.name}}</span>
+    <div>
+      <div id="gameName">{{game.name}}</div>
       <div class="player-list">
         <template is="dom-repeat" items="{{game.users}}">
           <img src$="{{item.imgSrc}}" alt$="{{item.name}}" title$="{{item.name}}">
         </template>
+
+        <div class="buttons">
+          <template is="dom-if" if="{{isMyGame}}">
+            <button id="start-game" on-click="_startGame">Start Game</button>
+          </template>
+
+          <button id="leave-game" on-click="_leaveGame">Leave</button>
+        </div>
       </div>
+    </div>
   </template>
 
   <style>
-    :host {
+    img {
+      padding: 10px;
+    }
+
+    button {
+      padding: 10px;
+
+      color: #777;
+      background: #fff;
+      border: 1px solid var(--game-border);
+      font-size: 1em;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+    :host > div {
+      padding: 10px;
       background-color: var(--game-bg);
       border: 1px solid var(--game-border);
       color: #777;
+      text-align: center;
     }
   </style>
 
@@ -57,10 +85,16 @@
             }
           },
 
-          game: Object
+          game: Object,
+          isMyGame: Boolean
         },
 
-        attached: function() {
+        _startGame: function() {
+          this.fire("start-game");
+        },
+
+        _leaveGame: function() {
+          this.fire("leave-game");
         }
       });
     }());

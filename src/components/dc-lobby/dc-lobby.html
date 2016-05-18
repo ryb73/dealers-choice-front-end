@@ -19,7 +19,7 @@
       <div id="lobby-content">
         <neon-animated-pages id="gamePages" selected={{_inGame}}>
           <game-list id="game-list" games="{{_games}}" on-new-game="_newGame" on-join-game="_joinGame"></game-list>
-          <pending-game></pending-game>
+          <pending-game on-leave-game="_leaveGame" on-start-game="_startGame"></pending-game>
         </neon-animated-pages>
       </div>
     </template>
@@ -71,7 +71,7 @@
     }
 
     neon-animated-pages {
-      min-height: 200px
+      min-height: 200px;
     }
 
     game-list {
@@ -85,10 +85,11 @@
 
     pending-game {
       width: 400px;
-      height: 200px;
+      height: auto;
+      min-height: 150px;
       margin: 15px auto;
 
-      --game-bg: rgba(117, 82, 58, 0.02);
+      --game-bg: rgba(255, 245, 237, 0.40);
       --game-border: rgba(117, 82, 58, 0.15);
     }
 
