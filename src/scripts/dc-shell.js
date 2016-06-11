@@ -96,7 +96,7 @@ function DcShell() {
   function enterGameRoom(initialGameState) {
     console.log("entering game room");
 
-    var canvas = document.createElement("dc-game-canvas");
+    var canvas = document.createElement("dc-canvas-socket-communicator");
     canvas.style.width = "100%";
     canvas.style.height = "100%";
     canvas.gameState = initialGameState;

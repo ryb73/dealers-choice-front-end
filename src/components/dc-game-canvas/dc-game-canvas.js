@@ -112,11 +112,7 @@ function denormalizeCoords(dispObj, coords) {
 Polymer({
   is: "dc-game-canvas",
   properties: {
-    gameState: {
-      type: Object,
-      value: null
-    },
-
+    gameState: Object,
     loaded: Boolean,
     debugMode: Boolean
   },
@@ -248,6 +244,8 @@ Polymer({
         this._createDecks();
         this._createRightHud();
         stage.update();
+
+        this.fire("load");
       }.bind(this));
   },
 

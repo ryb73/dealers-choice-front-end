@@ -1,0 +1,21 @@
+<link rel="import" href="/components/polymer/polymer.html">
+<link rel="import" href="/components/dc-game-canvas/dc-game-canvas.html">
+
+<dom-module id="dc-canvas-socket-communicator">
+  <template>
+    <dc-game-canvas game-state="{{gameState}}" on-load="_canvasLoaded"></dc-game-canvas>
+  </template>
+
+  <style>
+    :host {
+      display: block;
+    }
+
+    dc-game-canvas {
+        width: 100%;
+        height: 100%;
+    }
+  </style>
+
+  <script src="dc-canvas-socket-communicator.js"></script>
+</dom-module>

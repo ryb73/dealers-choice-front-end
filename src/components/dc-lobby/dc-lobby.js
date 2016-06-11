@@ -1,5 +1,5 @@
 /* jshint strict: global */
-/* global Polymer, DcShell */
+/* global Polymer, DcShell, alert */
 "use strict";
 
 var dcConstants  = require("dc-constants"),
@@ -17,11 +17,6 @@ Polymer({
     authInfo: {
       type: Object,
       value: null
-    },
-
-    _users: {
-      type: Array,
-      value: null,
     },
 
     _messages: {
@@ -43,7 +38,6 @@ Polymer({
   },
 
   attached: function() {
-    this._users = [];
     this._messages = [];
     this._games = [];
 
@@ -54,12 +48,18 @@ Polymer({
     this._showConnectingIndicator("Connecting...");
 
     socket = DcShell.getSocket();
-    socket.on("connect", this._onConnect.bind(this));
+    this._onConnect = this._onConnect.bind(this);
+    socket.on("connect", this._onConnect);
 
     loadUser("me")
       .done(function(user) {
         me = user;
       });
+  },
+
+  detached: function() {
+    socket.removeListener("connect", this._onConnect);
+    socket.removeListener("action", this._onAction);
   },
 
   _showConnectingIndicator: function(label) {
@@ -76,7 +76,8 @@ Polymer({
   _onConnect: function() {
     console.log("lobby: connected");
 
-    socket.on("action", this._onAction.bind(this));
+    this._onAction = this._onAction.bind(this);
+    socket.on("action", this._onAction);
 
     this._showConnectingIndicator("Entering lobby...");
 
@@ -121,17 +122,6 @@ Polymer({
   _onRegister: function(userIds) {
     console.log("lobby: registered");
 
-    userIds = _.without(userIds, this.authInfo.userID);
-    var qUsers = userIds.map(function(userId) {
-      return loadUser(userId);
-    });
-
-    q.all(qUsers)
-      .done(function(users) {
-        console.log("loaded users");
-        this._users = users;
-      }.bind(this));
-
     this._hideConnectingIndicator();
   },
 
@@ -139,12 +129,6 @@ Polymer({
     console.log("received command: " + msg.cmd);
 
     switch(msg.cmd) {
-      case MessageType.UserEnteredLobby:
-        this._userEnteredLobby(msg);
-        break;
-      case MessageType.UserLeftLobby:
-        this._userLeftLobby(msg);
-        break;
       case MessageType.ChatSent:
         this._receivedChat(msg);
         break;
@@ -154,25 +138,12 @@ Polymer({
       case MessageType.LobbyUpdated:
         this._listGames(msg.games);
         break;
+      case MessageType.GameStarted:
+        this._gameStarted();
+        break;
       default:
         console.log("Unexpected message type: " + msg.cmd);
     }
-  },
-
-  _userEnteredLobby: function(msg) {
-    console.log("user entered lobby: " + msg.userId);
-
-    loadUser(msg.userId)
-      .done(function(user) {
-        this.push("_users", user);
-      }.bind(this));
-  },
-
-  _userLeftLobby: function(msg) {
-    console.log("user left lobby: " + msg.userId);
-
-    var idx = this._userIdxById(msg.userId);
-    this.splice("_users", idx, 1);
   },
 
   _sendMsg: function(e) {
@@ -200,24 +171,6 @@ Polymer({
       message.pending = false;
       this.$.chat.refresh();
     }
-  },
-
-  _receivedChat: function(msg) {
-    var fromUser = this._getUserById(msg.userId);
-    this.push("_messages", {
-      user: fromUser,
-      message: msg.message
-    });
-  },
-
-  _userIdxById: function(id) {
-    return _.findIndex(this._users, function(user) {
-      return user.id === id;
-    });
-  },
-
-  _getUserById: function(id) {
-    return this._users[this._userIdxById(id)];
   },
 
   _newGame: function() {
@@ -273,5 +226,31 @@ Polymer({
       .done(function(gameDescription) {
         this.$$("pending-game").game = gameDescription;
       }.bind(this));
+  },
+
+  _startGame: function() {
+    socket.emit("action", {
+      cmd: MessageType.StartGame
+    }, this._startGameAck.bind(this));
+  },
+
+  _startGameAck: function(respCode) {
+    if(respCode.result === ResponseCode.StartNotEnoughPlayers) {
+      alert("The game must have at least 2 players to begin.");
+      return;
+    } else if(respCode.result !== ResponseCode.StartOk) {
+      alert("Unkown error");
+      console.log("error: ", respCode.result);
+      return;
+    }
+
+    this._gameStarted();
+  },
+
+  _gameStarted: function() {
+    socket.emit("action", { cmd: MessageType.GetState }, function(gameState) {
+      this._denormalizeGameDescription(gameState)
+        .then(DcShell.enterGameRoom);
+    }.bind(this));
   }
 });
