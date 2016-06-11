@@ -18,7 +18,7 @@ function loadUser(userId) {
         return;
       }
 
-      var user = new User(response);
+      var user = userObj(response);
       deferred.resolve(user);
     }
   );
@@ -26,27 +26,12 @@ function loadUser(userId) {
   return deferred.promise;
 }
 
-function User($response) {
-  var id = $response.id;
-  var name = $response.name;
-  var firstName = $response.firstName;
-  var imgSrc = $response.picture.data.url;
-  $response = null;
-
-  Object.defineProperties(this, {
-    id: {
-      enumerable: true,
-      get: function() { return id; }
-    },
-    name: {
-      enumerable: true,
-      get: function() { return name; }
-    },
-    imgSrc: {
-      enumerable: true,
-      get: function() { return imgSrc; }
-    }
-  });
+function userObj(apiResponse) {
+  return {
+    id: apiResponse.id,
+    name: apiResponse.name,
+    imgSrc: apiResponse.picture.data.url
+  };
 }
 
 module.exports = loadUser;
