@@ -29,6 +29,7 @@ $(function() {
 
       {
         name: "player2",
+        imgSrc: "https://scontent.xx.fbcdn.net/v/t1.0-1/c29.0.100.100/p100x100/10354686_10150004552801856_220367501106153455_n.jpg?oh=c4be024899b0adea5d272cd52ea56e93&oe=58009F77",
         player: {
           dcCards: [],
           cars: [], //[availCars.pop(), availCars.pop()],
