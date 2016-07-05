@@ -12,6 +12,7 @@ var q                  = require("q"),
     InsuranceFront     = gameUi.InsuranceFront,
     BlueBook           = gameUi.BlueBook,
     MyInsurances       = gameUi.MyInsurances,
+    RpsPrompt          = gameUi.RpsPrompt,
     assets             = gameUi.assets,
     AnimationThrottler = require("./animation-throttler");
 
@@ -19,7 +20,7 @@ var TRANSITION_TIME = 500;
 
 var stage; // assume only one canvas per page
 var decks, blueBook, bgBmp, myInsurances;
-var displayedCard;
+var displayedCard, modal;
 var animationThrottler = new AnimationThrottler(300);
 
 // Given an object and point relating to that object,
@@ -415,6 +416,16 @@ Polymer({
       displayedCard.x = coords.x;
       displayedCard.y = coords.y;
     }
+  },
+
+  _getRockPaperScissorsChoice: function() {
+    var rpsPrompt = new RpsPrompt();
+    rpsPrompt.x = this._width() / 2;
+    rpsPrompt.y = this._height() / 2;
+    stage.addChild(rpsPrompt);
+    stage.update();
+
+    return q(1);
   },
 
   _textAt: function(user, txt, coords) {

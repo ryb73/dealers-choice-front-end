@@ -77,10 +77,17 @@ $(function() {
       giveDcCard(+args[1]);
     } else if(args[0] === "gi") {
       giveInsurance(+args[1]);
+    } else if(args[0] === "rpsp") {
+      getRpsChoice();
     } else {
       alert("illegal command: " + args[0]);
       return;
     }
+  }
+
+  function getRpsChoice() {
+    getCanvas()._getRockPaperScissorsChoice()
+      .done(alert);
   }
 
   function newDeal() {
