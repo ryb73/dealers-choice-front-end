@@ -138,6 +138,7 @@ Polymer({
       this._refreshPlayers();
       this._refreshRightHud();
       this._refreshBg();
+      this._refreshModal();
       stage.update();
     }
   },
@@ -419,13 +420,19 @@ Polymer({
   },
 
   _getRockPaperScissorsChoice: function() {
-    var rpsPrompt = new RpsPrompt();
-    rpsPrompt.x = this._width() / 2;
-    rpsPrompt.y = this._height() / 2;
-    stage.addChild(rpsPrompt);
+    modal = new RpsPrompt();
+    this._refreshModal();
+    stage.addChild(modal);
     stage.update();
 
-    return q(1);
+    return modal.getSelection();
+  },
+
+  _refreshModal: function() {
+    if(modal) {
+      modal.x = this._width() / 2;
+      modal.y = this._height() / 2;
+    }
   },
 
   _textAt: function(user, txt, coords) {
