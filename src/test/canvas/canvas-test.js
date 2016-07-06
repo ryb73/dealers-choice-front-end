@@ -1,5 +1,6 @@
 var $ = window.$ = require("jquery"),
-    _ = require("lodash");
+    _ = require("lodash"),
+    q = require("q");
 require("webcomponents-lite");
 
 $(function() {
@@ -21,6 +22,7 @@ $(function() {
       {
         name: "player1",
         player: {
+          id: "p1",
           dcCards: [],
           cars: [], //[availCars.pop(), availCars.pop(), availCars.pop()],
           insurances: [],
@@ -31,6 +33,7 @@ $(function() {
         name: "player2",
         imgSrc: "https://scontent.xx.fbcdn.net/v/t1.0-1/c29.0.100.100/p100x100/10354686_10150004552801856_220367501106153455_n.jpg?oh=c4be024899b0adea5d272cd52ea56e93&oe=58009F77",
         player: {
+          id: "p2",
           dcCards: [],
           cars: [], //[availCars.pop(), availCars.pop()],
           insurances: [],
@@ -59,7 +62,7 @@ $(function() {
   });
 
   function handleCommand(cmd) {
-    /* jshint maxcomplexity: 10 */
+    /* jshint maxcomplexity: false */
     var args = cmd.split("/");
     if(args[0] === "rp") {
       removePlayer(+args[1]);
@@ -79,10 +82,42 @@ $(function() {
       giveInsurance(+args[1]);
     } else if(args[0] === "rpsp") {
       getRpsChoice();
+    } else if(args[0] === "rpsc") {
+      doRpsCountdown();
     } else {
       alert("illegal command: " + args[0]);
       return;
     }
+  }
+
+  function doRpsCountdown() {
+    var answers = generateRpsAnswers();
+
+    getCanvas()._beginRpsCountdown(answers[0].move);
+
+    q.delay(3000)
+      .done(function() {
+        getCanvas().supplyRpsAnswers(answers, makeRandomSurvivors());
+      });
+  }
+
+  function generateRpsAnswers() {
+    return getCanvas().gameState.users.map(function(user) {
+      return {
+        playerId: user.player.id,
+        move: Math.floor(Math.random() * 3) + 1
+      };
+    });
+  }
+
+  function makeRandomSurvivors() {
+    var survivors = [];
+    getCanvas().gameState.users.forEach(function(user) {
+      if(Math.random() > 0.5)
+        survivors.push(user.player.id);
+    });
+
+    return survivors;
   }
 
   function getRpsChoice() {
@@ -218,9 +253,11 @@ $(function() {
   }
 
   function addPlayer() {
+    var pnum = (getCanvas().gameState.users.length+1);
     getCanvas().addPlayer({
-      name: "player" + (getCanvas().gameState.users.length+1),
+      name: "player" + pnum,
       player: {
+        id: "p" + pnum,
         dcCards: [],
         cars: [],
         insurances: ["", ""],

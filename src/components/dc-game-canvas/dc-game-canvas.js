@@ -13,6 +13,7 @@ var q                  = require("q"),
     BlueBook           = gameUi.BlueBook,
     MyInsurances       = gameUi.MyInsurances,
     RpsPrompt          = gameUi.RpsPrompt,
+    RpsResults         = gameUi.RpsResults,
     assets             = gameUi.assets,
     AnimationThrottler = require("./animation-throttler");
 
@@ -253,15 +254,12 @@ Polymer({
 
   _loadAssets: function() {
     var loadingSplash = new LoadingSplash();
-    loadingSplash.x = this._width() / 2;
-    loadingSplash.y = this._height() / 2;
-    stage.addChild(loadingSplash);
-    stage.update();
+    this._showModal(loadingSplash);
 
     return loadingSplash.load()
       .tap(function() {
-        stage.removeChild(loadingSplash);
-      });
+        this._removeModal();
+      }.bind(this));
   },
 
   _createBackground: function() {
@@ -420,12 +418,42 @@ Polymer({
   },
 
   _getRockPaperScissorsChoice: function() {
-    modal = new RpsPrompt();
+    var rpsPrompt = new RpsPrompt();
+    this._showModal(rpsPrompt);
+
+    return rpsPrompt.getSelection()
+      .tap(this._beginRpsCountdown);
+  },
+
+  _beginRpsCountdown: function(myChoice) {
+    var rpsResults = new RpsResults(this.gameState.users, myChoice);
+    this._showModal(rpsResults);
+  },
+
+  supplyRpsAnswers: function(answers, survivors) {
+    var rpsResults = modal;
+    rpsResults.setAnswers(answers, survivors);
+    q.delay(5000)
+      .done(function() {
+        stage.removeChild(rpsResults);
+      });
+  },
+
+  _showModal: function(dispObj) {
+    if(modal) {
+      stage.removeChild(modal);
+    }
+
+    modal = dispObj;
     this._refreshModal();
     stage.addChild(modal);
     stage.update();
+  },
 
-    return modal.getSelection();
+  _removeModal: function() {
+    stage.removeChild(modal);
+    modal = null;
+    stage.update();
   },
 
   _refreshModal: function() {
