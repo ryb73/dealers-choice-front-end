@@ -91,10 +91,9 @@ $(function() {
   }
 
   function doRpsCountdown() {
+    getCanvas().beginRpsCountdown();
+
     var answers = generateRpsAnswers();
-
-    getCanvas()._beginRpsCountdown(answers[0].move);
-
     q.delay(3000)
       .done(function() {
         getCanvas().supplyRpsAnswers(answers, makeRandomSurvivors());
@@ -121,8 +120,7 @@ $(function() {
   }
 
   function getRpsChoice() {
-    getCanvas()._getRockPaperScissorsChoice()
-      .done(alert);
+    getCanvas().getRockPaperScissorsChoice().done();
   }
 
   function newDeal() {

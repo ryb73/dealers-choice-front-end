@@ -417,22 +417,26 @@ Polymer({
     }
   },
 
-  _getRockPaperScissorsChoice: function() {
+  getRockPaperScissorsChoice: function() {
     var rpsPrompt = new RpsPrompt();
     this._showModal(rpsPrompt);
 
     return rpsPrompt.getSelection()
-      .tap(this._beginRpsCountdown);
+      .tap(this._showRpsResultsModal.bind(this));
   },
 
-  _beginRpsCountdown: function(myChoice) {
+  beginRpsCountdown: function() {
+    modal.beginCountdown();
+  },
+
+  _showRpsResultsModal: function(myChoice) {
     var rpsResults = new RpsResults(this.gameState.users, myChoice);
     this._showModal(rpsResults);
   },
 
-  supplyRpsAnswers: function(answers, survivors) {
+  supplyRpsAnswers: function(answers, survivors, conclusion) {
     var rpsResults = modal;
-    rpsResults.setAnswers(answers, survivors);
+    rpsResults.setAnswers(answers, survivors, conclusion);
     q.delay(5000)
       .done(function() {
         stage.removeChild(rpsResults);

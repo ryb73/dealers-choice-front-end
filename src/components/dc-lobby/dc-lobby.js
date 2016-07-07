@@ -58,6 +58,7 @@ Polymer({
   },
 
   detached: function() {
+    console.log("removing lobby callbacks");
     socket.removeListener("connect", this._onConnect);
     socket.removeListener("action", this._onAction);
   },
