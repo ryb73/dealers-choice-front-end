@@ -36,9 +36,16 @@ Polymer({
   },
 
   _onAction: function(msg) {
+    console.log(msg);
     switch(msg.cmd) {
-      case MessageType.DealCardToPlayer:
+      case MessageType.DealDcCardToPlayer:
         this._dealDcCardToPlayer(msg);
+        break;
+      case MessageType.DealCarToPlayer:
+        this._dealCarToPlayer(msg);
+        break;
+      case MessageType.DealInsuranceToPlayer:
+        this._dealInsuranceToPlayer(msg);
         break;
       case MessageType.RockPaperScissors:
         this._doRockPaperScissors(msg);
@@ -56,7 +63,29 @@ Polymer({
 
   _dealDcCardToPlayer: function(msg) {
     var playerIdx = this._getPlayerIdxFromId(msg.playerId);
+    console.log(playerIdx);
     canvas.giveDcCardFromDeck(playerIdx, msg.dcCard);
+  },
+
+  _dealCarToPlayer: function(msg) {
+    var playerIdx = this._getPlayerIdxFromId(msg.playerId);
+    console.log(playerIdx);
+    canvas.giveCarFromDeck(playerIdx, msg.car);
+  },
+
+  _dealInsuranceToPlayer: function(msg) {
+    var playerIdx = this._getPlayerIdxFromId(msg.playerId);
+    console.log(playerIdx);
+    canvas.giveInsuranceFromDeck(playerIdx, msg.insurance);
+  },
+
+  _getPlayerIdxFromId: function(playerId) {
+    console.log(this.gameState.users, playerId);
+    return _.findIndex(this.gameState.users, {
+      player: {
+        id: playerId
+      }
+    });
   },
 
   _doRockPaperScissors: function(msg) {
