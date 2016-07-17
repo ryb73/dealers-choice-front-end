@@ -115,8 +115,14 @@ Polymer({
   is: "dc-game-canvas",
   properties: {
     gameState: Object,
-    loaded: Boolean,
-    debugMode: Boolean
+
+    loaded: {
+      type: Boolean,
+      value: false
+    },
+
+    debugMode: Boolean,
+    messages: Array
   },
 
   attached: function() {
@@ -230,6 +236,8 @@ Polymer({
   },
 
   _setup: function() {
+    this.messages = ["hey","ok"];
+
     this._createBackground();
 
     this._loadAssets()
@@ -465,6 +473,12 @@ Polymer({
       modal.x = this._width() / 2;
       modal.y = this._height() / 2;
     }
+  },
+
+  addChat: function(s) {
+    this.push("messages", s);
+    Polymer.dom.flush();
+    this.$.chat.scrollTop = this.$.chat.scrollHeight;
   },
 
   _textAt: function(user, txt, coords) {

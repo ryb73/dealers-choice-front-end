@@ -84,10 +84,16 @@ $(function() {
       getRpsChoice();
     } else if(args[0] === "rpsc") {
       doRpsCountdown();
+    } else if(args[0] === "chat") {
+      doChat(args[1]);
     } else {
       alert("illegal command: " + args[0]);
       return;
     }
+  }
+
+  function doChat(s) {
+    getCanvas().addChat(s);
   }
 
   function doRpsCountdown() {
