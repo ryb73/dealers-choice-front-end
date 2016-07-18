@@ -52,6 +52,10 @@ $(function() {
     ]
   };
 
+  canvas.callbacks = {
+    canPlayDcCard: function() { return q(true); }
+  };
+
   document.getElementById("content").appendChild(canvas);
 
   $("#cmdBox").keypress(function(event) {
@@ -86,10 +90,16 @@ $(function() {
       doRpsCountdown();
     } else if(args[0] === "chat") {
       doChat(args[1]);
+    } else if(args[0] === "hdc") {
+      highlightDcCards();
     } else {
       alert("illegal command: " + args[0]);
       return;
     }
+  }
+
+  function highlightDcCards() {
+    getCanvas().highlightDcCards();
   }
 
   function doChat(s) {

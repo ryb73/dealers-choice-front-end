@@ -15,6 +15,7 @@ var q                  = require("q"),
     RpsPrompt          = gameUi.RpsPrompt,
     RpsResults         = gameUi.RpsResults,
     assets             = gameUi.assets,
+    TurnChoice         = require("dc-constants").TurnChoice,
     AnimationThrottler = require("./animation-throttler");
 
 var TRANSITION_TIME = 500;
@@ -122,7 +123,8 @@ Polymer({
     },
 
     debugMode: Boolean,
-    messages: Array
+    messages: Array,
+    callbacks: Array
   },
 
   attached: function() {
@@ -236,7 +238,7 @@ Polymer({
   },
 
   _setup: function() {
-    this.messages = ["hey","ok"];
+    this.messages = [];
 
     this._createBackground();
 
@@ -351,7 +353,7 @@ Polymer({
   },
 
   _addNewPlayerToStage: function(user, idx) {
-    var playerBox = user.dispObjs.playerBox = new PlayerBox(user, idx === 0, this.debugMode);
+    var playerBox = user.dispObjs.playerBox = new PlayerBox(user, idx === 0, this.debugMode, this.callbacks);
     stage.addChildAt(playerBox, 1);
 
     playerBox.on("car-mouseover", this._carMouseOver.bind(this, idx));
@@ -481,6 +483,18 @@ Polymer({
     this.$.chat.scrollTop = this.$.chat.scrollHeight;
   },
 
+  getTurnChoice: function() {
+    var playerBox = this.gameState.users[0].dispObjs.playerBox;
+    var qDcCardId = playerBox.askForDcCardToPlay();
+    return qDcCardId
+      .then(function(cardId) {
+        return {
+          selection: TurnChoice.DcCard,
+          cardId: cardId
+        };
+      });
+  },
+
   _textAt: function(user, txt, coords) {
     if(!user.dispObjs.point) {
       user.dispObjs.point = new createjs.Shape();
@@ -497,6 +511,10 @@ Polymer({
 
     user.dispObjs.pointLabel.x = coords.x;
     user.dispObjs.pointLabel.y = coords.y;
+  },
+
+  highlightDcCards: function() {
+    this.gameState.users[0].dispObjs.playerBox._highlightPlayableCards();
   },
 
   _getCenter: function() {
