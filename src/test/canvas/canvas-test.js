@@ -23,9 +23,9 @@ $(function() {
         name: "player1",
         player: {
           id: "p1",
-          dcCards: [],
-          cars: [], //[availCars.pop(), availCars.pop(), availCars.pop()],
-          insurances: [],
+          dcCards: [availDcCards.pop(), availDcCards.pop(), availDcCards.pop()],
+          cars: [availCars.pop(), availCars.pop(), availCars.pop()],
+          insurances: [availInsurances.pop(), availInsurances.pop()],
         }
       },
 
@@ -34,9 +34,9 @@ $(function() {
         imgSrc: "https://scontent.xx.fbcdn.net/v/t1.0-1/c29.0.100.100/p100x100/10354686_10150004552801856_220367501106153455_n.jpg?oh=c4be024899b0adea5d272cd52ea56e93&oe=58009F77",
         player: {
           id: "p2",
-          dcCards: [],
-          cars: [], //[availCars.pop(), availCars.pop()],
-          insurances: [],
+          dcCards: [availDcCards.pop(), availDcCards.pop(), availDcCards.pop()],
+          cars: [availCars.pop(), availCars.pop()],
+          insurances: [availInsurances.pop()],
         }
       },
 
