@@ -303,7 +303,7 @@ Polymer({
   _createRightHud: function() {
     blueBook = new BlueBook();
 
-    myInsurances = new MyInsurances();
+    myInsurances = new MyInsurances(this._getMyUser().player.insurances);
     myInsurances.on("card-mouseover", this._insuranceMouseOver.bind(this));
     myInsurances.on("card-mouseout", this._removeDisplayedCard.bind(this));
 
@@ -485,7 +485,7 @@ Polymer({
   },
 
   getTurnChoice: function() {
-    var playerBox = this.gameState.users[0].dispObjs.playerBox;
+    var playerBox = this._getMyUser.dispObjs.playerBox;
     var qDcCardId = playerBox.askForDcCardToPlay();
     return qDcCardId
       .then(function(cardId) {
@@ -494,6 +494,14 @@ Polymer({
           cardId: cardId
         };
       });
+  },
+
+  highlightDcCards: function() {
+    this._getMyUser().dispObjs.playerBox._highlightPlayableCards();
+  },
+
+  _getMyUser: function() {
+    return this.gameState.users[0];
   },
 
   _textAt: function(user, txt, coords) {
@@ -512,10 +520,6 @@ Polymer({
 
     user.dispObjs.pointLabel.x = coords.x;
     user.dispObjs.pointLabel.y = coords.y;
-  },
-
-  highlightDcCards: function() {
-    this.gameState.users[0].dispObjs.playerBox._highlightPlayableCards();
   },
 
   _getCenter: function() {
