@@ -6,8 +6,6 @@ var q = require("q");
 function loadUser(userId) {
   var deferred = q.defer();
 
-  console.log("loadUser", userId);
-
   FB.api("/" + userId,
     {
       fields: [ "id", "name", "picture.width(100).height(100)" ]

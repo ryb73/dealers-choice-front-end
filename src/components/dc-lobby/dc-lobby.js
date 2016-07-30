@@ -240,7 +240,7 @@ Polymer({
       alert("The game must have at least 2 players to begin.");
       return;
     } else if(respCode.result !== ResponseCode.StartOk) {
-      alert("Unkown error");
+      alert("Unknown error");
       console.log("error: ", respCode.result);
       return;
     }

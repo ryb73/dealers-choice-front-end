@@ -250,7 +250,6 @@ Polymer({
         this.loaded = true;
 
         this.gameState.users.forEach(function(user) {
-          console.log(user.player.dcCards);
           user.dispObjs = {};
         });
 
