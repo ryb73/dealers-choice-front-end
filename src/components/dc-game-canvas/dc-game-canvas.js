@@ -484,7 +484,7 @@ Polymer({
   },
 
   getTurnChoice: function() {
-    var playerBox = this._getMyUser.dispObjs.playerBox;
+    var playerBox = this._getMyUser().dispObjs.playerBox;
     var qDcCardId = playerBox.askForDcCardToPlay();
     return qDcCardId
       .then(function(cardId) {
