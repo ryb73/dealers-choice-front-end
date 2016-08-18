@@ -51,6 +51,9 @@ Polymer({
     this._onConnect = this._onConnect.bind(this);
     socket.on("connect", this._onConnect);
 
+    this._onGameError = this._onGameError.bind(this);
+    socket.on("gameError", this._onGameError);
+
     loadUser("me")
       .done(function(user) {
         me = user;
@@ -58,9 +61,13 @@ Polymer({
   },
 
   detached: function() {
-    console.log("removing lobby callbacks");
     socket.removeListener("connect", this._onConnect);
     socket.removeListener("action", this._onAction);
+    socket.removeListener("gameError", this._onGameError);
+  },
+
+  _onGameError: function(msg) {
+    alert("Error: " + msg);
   },
 
   _showConnectingIndicator: function(label) {
@@ -194,8 +201,7 @@ Polymer({
 
     this._denormalizeGameDescription(response.gameDescription)
       .done(function(gameDescription) {
-        this._inGame = 1;
-        this.$$("pending-game").game = gameDescription;
+        this._setupPendingGame(gameDescription);
         this.$$("pending-game").isMyGame = true;
       }.bind(this));
   },
@@ -209,10 +215,15 @@ Polymer({
 
     this._denormalizeGameDescription(response.gameDescription)
       .done(function(gameDescription) {
-        this._inGame = 1;
-        this.$$("pending-game").game = gameDescription;
+        this._setupPendingGame(gameDescription);
         this.$$("pending-game").isMyGame = false;
       }.bind(this));
+  },
+
+  _setupPendingGame: function(gameDescription) {
+    this._inGame = 1;
+    this.$$("pending-game").game = gameDescription;
+    this.$$("pending-game").callbacks = { getPresets: this._getPresets.bind(this) };
   },
 
   _leaveGame: function() {
@@ -229,9 +240,14 @@ Polymer({
       }.bind(this));
   },
 
-  _startGame: function() {
+  _startGame: function(e) {
+    var presetId = null;
+    if(e.detail)
+      presetId = e.detail.presetId;
+
     socket.emit("action", {
-      cmd: MessageType.StartGame
+      cmd: MessageType.StartGame,
+      presetId: presetId
     }, this._startGameAck.bind(this));
   },
 
@@ -253,5 +269,15 @@ Polymer({
       this._denormalizeGameDescription(gameState)
         .then(DcShell.enterGameRoom);
     }.bind(this));
+  },
+
+  _getPresets: function() {
+    var defer = q.defer();
+
+    socket.emit("action", { cmd: MessageType.GetPresets }, function(presets) {
+      defer.resolve(presets);
+    });
+
+    return defer.promise;
   }
 });

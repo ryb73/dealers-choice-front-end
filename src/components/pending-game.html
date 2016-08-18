@@ -20,6 +20,16 @@
         </div>
       </div>
     </div>
+
+    <template is="dom-if" if="{{debugMenuShown}}">
+      <div id="pending-game-debug-menu">
+        <template is="dom-repeat" items="{{presets}}">
+          <button class="preset-link" on-click="_presetClicked">
+            {{item.name}}
+          </button>
+        </template>
+      </div>
+    </template>
   </template>
 
   <style>
@@ -45,6 +55,10 @@
       border: 1px solid var(--game-border);
       color: #777;
       text-align: center;
+    }
+
+    #pending-game-debug-menu button {
+      margin-top: 5px;
     }
   </style>
 
@@ -85,15 +99,39 @@
           },
 
           game: Object,
-          isMyGame: Boolean
+          isMyGame: Boolean,
+          debugMenuShown: Boolean,
+
+          callbacks: Object,
+          presets: Array
         },
 
-        _startGame: function() {
-          this.fire("start-game");
+        _startGame: function(e) {
+          if(this._testForDebugMenu(e))
+            this._showDebugMenu();
+          else
+            this.fire("start-game");
+        },
+
+        _testForDebugMenu: function(e) {
+          return e.shiftKey && e.altKey && e.metaKey;
+        },
+
+        _showDebugMenu: function() {
+          this.debugMenuShown = true;
+          console.log(this.callbacks);
+          this.callbacks.getPresets()
+            .done(function(presets) {
+              this.presets = presets;
+            }.bind(this));
         },
 
         _leaveGame: function() {
           this.fire("leave-game");
+        },
+
+        _presetClicked: function(e) {
+          this.fire("start-game", { presetId: e.model.item.id} );
         }
       });
     }());
