@@ -131,6 +131,7 @@ function buildScripts(fromDir, toDir, prodMode) {
       srcPath = fromDir + "**/*.js";
 
   globby([ srcPath ], function(err, myJsPaths) {
+    console.log(myJsPaths);
     subDeferrals = new Array(myJsPaths.length);
 
     for(var i = 0; i < myJsPaths.length; ++i) {

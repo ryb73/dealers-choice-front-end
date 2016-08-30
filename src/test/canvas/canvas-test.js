@@ -92,10 +92,16 @@ $(function() {
       doChat(args[1]);
     } else if(args[0] === "hdc") {
       highlightDcCards();
+    } else if(args[0] === "dc") {
+      discardCar(+args[1], +args[2]);
     } else {
       alert("illegal command: " + args[0]);
       return;
     }
+  }
+
+  function discardCar(playerIdx, carIdx) {
+    getCanvas().discardCar(playerIdx, carIdx);
   }
 
   function highlightDcCards() {

@@ -81,6 +81,12 @@ Polymer({
       case MessageType.GetTurnChoice:
         this._handleTurnChoice(msg);
         break;
+      case MessageType.ChooseOwnCar:
+        this._chooseOwnCar(msg);
+        break;
+      case MessageType.CarSoldToBank:
+        this._carSoldToBank(msg);
+        break;
       default:
         console.log("Unexpected message type: " + msg.cmd);
     }
@@ -107,6 +113,14 @@ Polymer({
         id: playerId
       }
     });
+  },
+
+  _getCarIdxFromId: function(player, carId) {
+    return _.findIndex(player.cars, { id: carId });
+  },
+
+  _getUserByIdx: function(idx) {
+    return this.gameState.users[idx];
   },
 
   _doRockPaperScissors: function(msg) {
@@ -147,19 +161,57 @@ Polymer({
       canvas.getTurnChoice()
         .done(this._sendTurnChoice.bind(this, msg.handlerId));
     } else {
-      var playerName = this.gameState.users[playerIdx].name;
+      var playerName = this._getUserByIdx(playerIdx).name;
       canvas.addChat("It's now " + playerName + "'s turn.");
     }
   },
 
   _sendTurnChoice: function(handlerId, choiceData) {
     var answer = _.cloneDeep(choiceData);
-    choiceData.handlerId = handlerId;
+    answer.handlerId = handlerId;
 
     var msg = {
       cmd: MessageType.Choice,
       answer: answer
     };
     socket.emit("action", msg);
-  }
+  },
+
+  _chooseOwnCar: function(msg) {
+    var playerIdx = this._getPlayerIdxFromId(msg.playerId);
+    if(playerIdx !== 0) return;
+
+    canvas.addChat("Select one of your cars.");
+    canvas.chooseOwnCar()
+      .done(this._sendCarChoice.bind(this, msg.handlerId));
+  },
+
+  _sendCarChoice: function(handlerId, carId) {
+    var msg = {
+      cmd: MessageType.Choice,
+      answer: {
+        handlerId: handlerId,
+        carId: carId
+      }
+    };
+
+    socket.emit("action", msg);
+  },
+
+  _carSoldToBank: function(msg) {
+    var playerIdx = this._getPlayerIdxFromId(msg.playerId);
+    var user = this._getUserByIdx(playerIdx);
+
+    var name;
+    if(playerIdx === 0)
+      name = "You";
+    else
+      name = user.name;
+
+    canvas.addChat(name + " sold #" + msg.carId + " for $" + msg.amount);
+
+    var carIdx = this._getCarIdxFromId(user.player, msg.carId);
+    canvas.discardCar(playerIdx, carIdx);
+    canvas.giveMoneyFromBank(playerIdx, msg.amount);
+  },
 });

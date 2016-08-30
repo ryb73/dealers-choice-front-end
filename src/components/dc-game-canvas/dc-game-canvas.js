@@ -12,18 +12,19 @@ var q                  = require("q"),
     InsuranceFront     = gameUi.InsuranceFront,
     BlueBook           = gameUi.BlueBook,
     MyInsurances       = gameUi.MyInsurances,
+    MyMoney            = gameUi.MyMoney,
     RpsPrompt          = gameUi.RpsPrompt,
     RpsResults         = gameUi.RpsResults,
     assets             = gameUi.assets,
     TurnChoice         = require("dc-constants").TurnChoice,
     AnimationThrottler = require("./animation-throttler");
 
-var TRANSITION_TIME = 500;
+var TRANSITION_TIME = 5000;
 
 var stage; // assume only one canvas per page
-var decks, blueBook, bgBmp, myInsurances;
+var decks, blueBook, bgBmp, myInsurances, myMoney;
 var displayedCard, modal;
-var animationThrottler = new AnimationThrottler(300);
+var animationThrottler = new AnimationThrottler(3000);
 
 // Given an object and point relating to that object,
 // returns a set of coords representing the same point with
@@ -112,7 +113,7 @@ function denormalizeCoords(dispObj, coords) {
   };
 }
 
-Polymer({
+var proto = {
   is: "dc-game-canvas",
   properties: {
     gameState: Object,
@@ -220,7 +221,7 @@ Polymer({
     } else {
       var insuranceAnimData = decks.getInsuranceToGive();
 
-      // We'll get the coords with respoect to decks -- normalize them
+      // We'll get the coords with respect to decks -- normalize them
       cardCoords = insuranceAnimData.coords;
       cardCoords.x += decks.x - decks.regX;
       cardCoords.y += decks.y - decks.regY;
@@ -230,6 +231,32 @@ Polymer({
       return playerBox.giveInsurance(insuranceAnimData.insuranceDisp, cardCoords, TRANSITION_TIME);
     }
   }),
+
+  discardCar: animated(function(userIdx, carIdx) {
+    var user = this.gameState.users[userIdx];
+    var playerBox = user.dispObjs.playerBox;
+    var carAnimData = playerBox.removeCar(carIdx, TRANSITION_TIME);
+
+    var normalizedCoords = normalizeCoords(playerBox, carAnimData.coords);
+    var deckCoords = denormalizeCoords(decks, normalizedCoords);
+
+    var point = new createjs.Shape();
+    point.graphics.beginFill("red")
+      .drawRect(normalizedCoords.x - 5, normalizedCoords.y - 5, 10, 10);
+    stage.addChild(point);
+
+    var point2 = new createjs.Shape();
+    point2.graphics.beginFill("blue")
+      .drawRect(deckCoords.x - 5, deckCoords.y - 5, 10, 10);
+    stage.addChild(point2);
+
+    return decks.discardCar(carAnimData.carDisp, deckCoords, TRANSITION_TIME);
+  }),
+
+  giveMoneyFromBank: function(playerIdx, amount) {
+    this._getPlayer(playerIdx).money += amount;
+    this._refreshRightHud();
+  },
 
   // Determines whether the player at the given index
   // is the current (i.e. local) player
@@ -306,19 +333,26 @@ Polymer({
     myInsurances.on("card-mouseover", this._insuranceMouseOver.bind(this));
     myInsurances.on("card-mouseout", this._removeDisplayedCard.bind(this));
 
+    myMoney = new MyMoney(this._getMyUser().player);
+
     this._refreshRightHud();
 
     stage.addChild(blueBook);
+    stage.addChild(myMoney);
     stage.addChild(myInsurances);
   },
 
   _refreshRightHud: function() {
-    var bounds = blueBook.getBounds();
-    blueBook.x = this._width() - bounds.x - bounds.width - 10;
-    blueBook.y = this._height() - bounds.y - bounds.height - 10;
+    var bbBounds = blueBook.getBounds();
+    blueBook.x = this._width() - bbBounds.x - bbBounds.width - 10;
+    blueBook.y = this._height() - bbBounds.y - bbBounds.height - 10;
 
-    myInsurances.x = blueBook.x;
-    myInsurances.y = blueBook.y - 10;
+    var moneyBounds = myMoney.getBounds();
+    myMoney.x = blueBook.x;
+    myMoney.y = blueBook.y - 10 - moneyBounds.height;
+
+    myInsurances.x = moneyBounds.x;
+    myInsurances.y = moneyBounds.y - 10;
   },
 
   _createPlayers: function() {
@@ -495,6 +529,11 @@ Polymer({
       });
   },
 
+  chooseOwnCar: function() {
+    var playerBox = this._getMyUser().dispObjs.playerBox;
+    return playerBox.askForCar();
+  },
+
   highlightDcCards: function() {
     this._getMyUser().dispObjs.playerBox._highlightPlayableCards();
   },
@@ -566,7 +605,9 @@ Polymer({
   _height: function() {
     return this.$.gameCanvas.height;
   }
-});
+};
+
+Polymer(proto);
 
 function animated(fn) {
   return function() {
