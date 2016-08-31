@@ -1,9 +1,9 @@
 "use strict";
 
-const buildDir = "./build-dev",
-      srcDir   = "./src";
+const buildDir = "./build-dev/",
+      srcDir   = "./src/";
 
 module.exports = [
-    require("./less.config")(buildDir, srcDir),
-    require("./static.config")(__dirname, buildDir, srcDir),
+    require("./less.config")(srcDir, buildDir),
+    require("./static.config")(srcDir, buildDir),
 ];

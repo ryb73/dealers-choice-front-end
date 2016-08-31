@@ -2,12 +2,12 @@
 
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
-const styleDir = "/style";
+const styleDir = "style/";
 
-module.exports = (buildDir, srcDir) => {
+module.exports = (srcDir, buildDir) => {
     return {
         entry:  {
-            base: srcDir + styleDir + "/base.less",
+            base: srcDir + styleDir + "base.less",
         },
 
         output: {

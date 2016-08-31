@@ -2,24 +2,27 @@
 
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
-const imgDir = "/images",
-      fontDir = "/fonts";
+const imgDir = "images/",
+      fontDir = "fonts/";
 
-module.exports = (context, buildDir, srcDir) => {
+module.exports = (srcDir, buildDir) => {
     return {
-        context: context,
+        output: {
+            path: buildDir,
+            filename: "[name]",
+        },
 
         plugins: [
             new CopyWebpackPlugin([{
-                from: buildDir + "/**.html",
-                to: srcDir
+                context: srcDir,
+                from: "**/*.html",
             }, {
-                from: buildDir + imgDir + "/**",
-                to: srcDir + imgDir
+                context: srcDir,
+                from: imgDir + "**",
             }, {
-                from: buildDir + fontDir + "/**",
-                to: srcDir + fontDir
-            }])
+                context: srcDir,
+                from: fontDir + "**",
+            }]),
         ],
     };
 };
