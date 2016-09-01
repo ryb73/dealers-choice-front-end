@@ -19,12 +19,12 @@ var q                  = require("q"),
     TurnChoice         = require("dc-constants").TurnChoice,
     AnimationThrottler = require("./animation-throttler");
 
-var TRANSITION_TIME = 5000;
+var TRANSITION_TIME = 500;
 
 var stage; // assume only one canvas per page
 var decks, blueBook, bgBmp, myInsurances, myMoney;
 var displayedCard, modal;
-var animationThrottler = new AnimationThrottler(3000);
+var animationThrottler = new AnimationThrottler(300);
 
 // Given an object and point relating to that object,
 // returns a set of coords representing the same point with

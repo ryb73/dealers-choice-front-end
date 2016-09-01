@@ -1,7 +1,6 @@
 var $ = window.$ = require("jquery"),
     _ = require("lodash"),
     q = require("q");
-require("webcomponents-lite");
 
 $(function() {
   "use strict";
