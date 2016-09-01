@@ -20,13 +20,16 @@ module.exports = (srcFile, buildDir) => {
 
         module: {
             loaders: [{
+                test: /\.js$/,
+                loader: "babel-loader"
+            },{
                 test: /\.json$/,
                 loader: "json",
             }],
         },
 
         resolve: {
-            extensions: ["", ".js", ".jsx", ".json"]
+            extensions: ["", ".js", ".json"]
         },
 
         devtool: "source-map",
