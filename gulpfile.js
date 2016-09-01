@@ -54,12 +54,6 @@ function build(buildDir, prodMode) {
 
 function copyVendor(buildDir) {
   var qCopyJobs = [
-    doCopy(NODE_DIR + "socket.io-client/socket.io.js",
-           buildDir + "scripts/socket.io"),
-
-    doCopy(NODE_DIR + "socket.io-client/lib/**",
-           buildDir + "scripts/socket.io/lib"),
-
     doCopy([BOWER_DIR + "polymer/*.html"],
            buildDir + "components/polymer"),
 

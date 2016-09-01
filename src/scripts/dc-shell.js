@@ -5,7 +5,6 @@ var io          = require("socket.io-client"),
     MessageType = dcConstants.MessageType;
 
 var $ = window.$ = require("jquery");
-require("webcomponents-lite");
 
 function DcShell() {
   "use strict";
