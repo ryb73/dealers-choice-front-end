@@ -233,22 +233,12 @@ var proto = {
   }),
 
   discardCar: animated(function(userIdx, carIdx) {
-    var user = this.gameState.users[userIdx];
-    var playerBox = user.dispObjs.playerBox;
-    var carAnimData = playerBox.removeCar(carIdx, TRANSITION_TIME);
+    let user = this.gameState.users[userIdx];
+    let playerBox = user.dispObjs.playerBox;
+    let carAnimData = playerBox.removeCar(carIdx, TRANSITION_TIME);
 
-    var normalizedCoords = normalizeCoords(playerBox, carAnimData.coords);
-    var deckCoords = denormalizeCoords(decks, normalizedCoords);
-
-    var point = new createjs.Shape();
-    point.graphics.beginFill("red")
-      .drawRect(normalizedCoords.x - 5, normalizedCoords.y - 5, 10, 10);
-    stage.addChild(point);
-
-    var point2 = new createjs.Shape();
-    point2.graphics.beginFill("blue")
-      .drawRect(deckCoords.x - 5, deckCoords.y - 5, 10, 10);
-    stage.addChild(point2);
+    let normalizedCoords = normalizeCoords(playerBox, carAnimData.coords);
+    let deckCoords = denormalizeCoords(decks, normalizedCoords);
 
     return decks.discardCar(carAnimData.carDisp, deckCoords, TRANSITION_TIME);
   }),

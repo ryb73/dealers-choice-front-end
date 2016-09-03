@@ -2,9 +2,6 @@
 
 const path = require("path");
 
-const scriptsDir    = "scripts/",
-      componentsDir = "components/";
-
 module.exports = (srcFile, buildDir) => {
     let filename = path.basename(srcFile, ".js");
 

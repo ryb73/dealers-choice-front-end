@@ -1,6 +1,6 @@
 {
   "strict": true,
-  "es5": true,
+  "esnext": true,
   "browser": true,
   "predef": [ "require", "module", "console", "FB" ],
 
