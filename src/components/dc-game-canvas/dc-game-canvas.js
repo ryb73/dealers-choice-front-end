@@ -19,12 +19,12 @@ var q                  = require("q"),
     TurnChoice         = require("dc-constants").TurnChoice,
     AnimationThrottler = require("./animation-throttler");
 
-var TRANSITION_TIME = 500;
+var TRANSITION_TIME = 5000;
 
 var stage; // assume only one canvas per page
 var decks, blueBook, bgBmp, myInsurances, myMoney;
 var displayedCard, modal;
-var animationThrottler = new AnimationThrottler(300);
+var animationThrottler = new AnimationThrottler(3000);
 
 // Given an object and point relating to that object,
 // returns a set of coords representing the same point with
@@ -241,6 +241,25 @@ var proto = {
     let deckCoords = denormalizeCoords(decks, normalizedCoords);
 
     return decks.discardCar(carAnimData.carDisp, deckCoords, TRANSITION_TIME);
+  }),
+
+  discardDcCard: animated(function(userIdx, cardIdx) {
+    let user = this.gameState.users[userIdx];
+    let playerBox = user.dispObjs.playerBox;
+
+    let dcCardAnimData;
+    if(this._isMe(userIdx))
+      dcCardAnimData = playerBox.removeDcCard(cardIdx, TRANSITION_TIME);
+    else
+      dcCardAnimData = playerBox.removeRandomDcCard(TRANSITION_TIME);
+
+    let normalizedCoords = normalizeCoords(playerBox, dcCardAnimData.coords);
+    let deckCoords = denormalizeCoords(decks, normalizedCoords);
+
+    this._textAt(user, "1", normalizedCoords);
+    this._textAt(user, "2", deckCoords);
+
+    return decks.discardDcCard(dcCardAnimData.cardDisp, deckCoords, TRANSITION_TIME);
   }),
 
   giveMoneyFromBank: function(playerIdx, amount) {

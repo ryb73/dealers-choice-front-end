@@ -93,6 +93,8 @@ $(function() {
       highlightDcCards();
     } else if(args[0] === "dc") {
       discardCar(+args[1], +args[2]);
+    } else if(args[0] === "ddc") {
+      discardDcCard(+args[1], +args[2]);
     } else {
       alert("illegal command: " + args[0]);
       return;
@@ -101,6 +103,10 @@ $(function() {
 
   function discardCar(playerIdx, carIdx) {
     getCanvas().discardCar(playerIdx, carIdx);
+  }
+
+  function discardDcCard(playerIdx, cardIdx) {
+    getCanvas().discardDcCard(playerIdx, cardIdx);
   }
 
   function highlightDcCards() {

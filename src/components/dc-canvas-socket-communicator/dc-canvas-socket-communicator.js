@@ -87,6 +87,9 @@ Polymer({
       case MessageType.CarSoldToBank:
         this._carSoldToBank(msg);
         break;
+      case MessageType.CardPlayed:
+        this._cardPlayed(msg);
+        break;
       default:
         console.log("Unexpected message type: " + msg.cmd);
     }
@@ -156,7 +159,7 @@ Polymer({
 
   _handleTurnChoice: function(msg) {
     var playerIdx = this._getPlayerIdxFromId(msg.playerId);
-    if(playerIdx === 0) {
+    if(this._isMe(playerIdx)) {
       canvas.addChat("It's your turn.");
       canvas.getTurnChoice()
         .done(this._sendTurnChoice.bind(this, msg.handlerId));
@@ -199,19 +202,40 @@ Polymer({
   },
 
   _carSoldToBank: function(msg) {
-    var playerIdx = this._getPlayerIdxFromId(msg.playerId);
-    var user = this._getUserByIdx(playerIdx);
+    let playerIdx = this._getPlayerIdxFromId(msg.playerId);
+    let user = this._getUserByIdx(playerIdx);
 
-    var name;
-    if(playerIdx === 0)
-      name = "You";
-    else
-      name = user.name;
+    let name = this._getDisplayableName(playerIdx);
+    canvas.addChat(name + " sold #" + msg.carId + " for $" + msg.amount + ".");
 
-    canvas.addChat(name + " sold #" + msg.carId + " for $" + msg.amount);
-
-    var carIdx = this._getCarIdxFromId(user.player, msg.carId);
+    let carIdx = this._getCarIdxFromId(user.player, msg.carId);
     canvas.discardCar(playerIdx, carIdx);
     canvas.giveMoneyFromBank(playerIdx, msg.amount);
   },
+
+  _cardPlayed(msg) {
+    let playerIdx = this._getPlayerIdxFromId(msg.playerId);
+    let user = this._getUserByIdx(playerIdx);
+
+    let name = this._getDisplayableName(playerIdx);
+    canvas.addChat(name + " played " + msg.cardTitle + ".");
+
+    if(this._isMe(playerIdx)) {
+      let cardIdx = this._getCardIdxFromId(msg.cardId);
+      canvas.discardDcCard(playerIdx, cardIdx);
+    } else {
+      canvas.discardDcCard(playerIdx);
+    }
+  },
+
+  _getDisplayableName(userIdx) {
+    if(userIdx === 0)
+      return "You";
+    else
+      return this._getUserByIdx(userIdx).name;
+  },
+
+  _isMe(playerIdx) {
+    return playerIdx === 0;
+  }
 });
