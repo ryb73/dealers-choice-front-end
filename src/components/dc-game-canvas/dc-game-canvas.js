@@ -19,12 +19,12 @@ var q                  = require("q"),
     TurnChoice         = require("dc-constants").TurnChoice,
     AnimationThrottler = require("./animation-throttler");
 
-var TRANSITION_TIME = 5000;
+var TRANSITION_TIME = 500;
 
 var stage; // assume only one canvas per page
 var decks, blueBook, bgBmp, myInsurances, myMoney;
 var displayedCard, modal;
-var animationThrottler = new AnimationThrottler(3000);
+var animationThrottler = new AnimationThrottler(300);
 
 // Given an object and point relating to that object,
 // returns a set of coords representing the same point with
@@ -255,9 +255,6 @@ var proto = {
 
     let normalizedCoords = normalizeCoords(playerBox, dcCardAnimData.coords);
     let deckCoords = denormalizeCoords(decks, normalizedCoords);
-
-    this._textAt(user, "1", normalizedCoords);
-    this._textAt(user, "2", deckCoords);
 
     return decks.discardDcCard(dcCardAnimData.cardDisp, deckCoords, TRANSITION_TIME);
   }),
