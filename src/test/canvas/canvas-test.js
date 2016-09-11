@@ -25,6 +25,7 @@ $(function() {
           dcCards: [availDcCards.pop(), availDcCards.pop(), availDcCards.pop()],
           cars: [availCars.pop(), availCars.pop(), availCars.pop()],
           insurances: [availInsurances.pop(), availInsurances.pop()],
+          money: 17000,
         }
       },
 
@@ -36,6 +37,7 @@ $(function() {
           dcCards: [availDcCards.pop(), availDcCards.pop(), availDcCards.pop()],
           cars: [availCars.pop(), availCars.pop()],
           insurances: [availInsurances.pop()],
+          money: 17000,
         }
       },
 
@@ -95,10 +97,16 @@ $(function() {
       discardCar(+args[1], +args[2]);
     } else if(args[0] === "ddc") {
       discardDcCard(+args[1], +args[2]);
+    } else if(args[0] === "gm") {
+      giveMoney(+args[1], +args[2]);
     } else {
       alert("illegal command: " + args[0]);
       return;
     }
+  }
+
+  function giveMoney(amount, playerIdx) {
+    getCanvas().giveMoneyFromBank(playerIdx, amount);
   }
 
   function discardCar(playerIdx, carIdx) {

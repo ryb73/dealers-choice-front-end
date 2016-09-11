@@ -10,7 +10,7 @@ var dcConstants  = require("dc-constants"),
 
 var canvas, socket;
 
-Polymer({
+let proto = {
   is: "dc-canvas-socket-communicator",
   properties: {
     gameState: {
@@ -90,6 +90,9 @@ Polymer({
       case MessageType.CardPlayed:
         this._cardPlayed(msg);
         break;
+      case MessageType.AllowSecondDcCard:
+        this._allowSecondDcCard(msg);
+        break;
       default:
         console.log("Unexpected message type: " + msg.cmd);
     }
@@ -120,6 +123,10 @@ Polymer({
 
   _getCarIdxFromId: function(player, carId) {
     return _.findIndex(player.cars, { id: carId });
+  },
+
+  _getDcCardIdxFromId: function(player, cardId) {
+    return _.findIndex(player.dcCards, { id: cardId });
   },
 
   _getUserByIdx: function(idx) {
@@ -180,6 +187,23 @@ Polymer({
     socket.emit("action", msg);
   },
 
+  _allowSecondDcCard: function(msg) {
+    canvas.allowSecondDcCard()
+      .done(this._sendSecondDcCardChoice.bind(this, msg.handlerId));
+  },
+
+  _sendSecondDcCardChoice: function(handlerId, cardId) {
+    let msg = {
+      cmd: MessageType.Choice,
+      answer: {
+        handlerId,
+        cardId,
+        skip: !cardId
+      }
+    };
+    socket.emit("action", msg);
+  },
+
   _chooseOwnCar: function(msg) {
     var playerIdx = this._getPlayerIdxFromId(msg.playerId);
     if(playerIdx !== 0) return;
@@ -221,7 +245,7 @@ Polymer({
     canvas.addChat(name + " played " + msg.cardTitle + ".");
 
     if(this._isMe(playerIdx)) {
-      let cardIdx = this._getCardIdxFromId(msg.cardId);
+      let cardIdx = this._getDcCardIdxFromId(msg.cardId);
       canvas.discardDcCard(playerIdx, cardIdx);
     } else {
       canvas.discardDcCard(playerIdx);
@@ -238,4 +262,6 @@ Polymer({
   _isMe(playerIdx) {
     return playerIdx === 0;
   }
-});
+};
+
+Polymer(proto);

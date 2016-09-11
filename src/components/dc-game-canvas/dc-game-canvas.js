@@ -356,6 +356,7 @@ var proto = {
     var moneyBounds = myMoney.getBounds();
     myMoney.x = blueBook.x;
     myMoney.y = blueBook.y - 10 - moneyBounds.height;
+    myMoney.updateMoney();
 
     myInsurances.x = moneyBounds.x;
     myInsurances.y = moneyBounds.y - 10;
@@ -532,6 +533,15 @@ var proto = {
           selection: TurnChoice.DcCard,
           cardId: cardId
         };
+      });
+  },
+
+  allowSecondDcCard: function() {
+    var playerBox = this._getMyUser().dispObjs.playerBox;
+    var qDcCardId = playerBox.askForDcCardToPlay();
+    return qDcCardId
+      .then(function(cardId) {
+        return cardId;
       });
   },
 

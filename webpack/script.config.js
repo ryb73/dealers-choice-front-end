@@ -28,7 +28,5 @@ module.exports = (srcFile, buildDir) => {
         resolve: {
             extensions: ["", ".js", ".json"]
         },
-
-        devtool: "source-map",
     };
 };
