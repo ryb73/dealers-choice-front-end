@@ -550,7 +550,7 @@ var proto = {
     return playerBox.askForCar();
   },
 
-  highlightDcCards: function() {
+  _highlightDcCards: function() {
     this._getMyUser().dispObjs.playerBox._highlightPlayableCards();
   },
 
