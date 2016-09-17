@@ -245,7 +245,7 @@ let proto = {
     canvas.addChat(name + " played " + msg.cardTitle + ".");
 
     if(this._isMe(playerIdx)) {
-      let cardIdx = this._getDcCardIdxFromId(msg.cardId);
+      let cardIdx = this._getDcCardIdxFromId(user.player, msg.cardId);
       canvas.discardDcCard(playerIdx, cardIdx);
     } else {
       canvas.discardDcCard(playerIdx);

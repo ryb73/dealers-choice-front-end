@@ -243,21 +243,29 @@ var proto = {
     return decks.discardCar(carAnimData.carDisp, deckCoords, TRANSITION_TIME);
   }),
 
-  discardDcCard: animated(function(userIdx, cardIdx) {
+  discardDcCard: function(userIdx, cardIdx) {
     let user = this.gameState.users[userIdx];
     let playerBox = user.dispObjs.playerBox;
 
-    let dcCardAnimData;
-    if(this._isMe(userIdx))
-      dcCardAnimData = playerBox.removeDcCard(cardIdx, TRANSITION_TIME);
-    else
-      dcCardAnimData = playerBox.removeRandomDcCard(TRANSITION_TIME);
+    // Sad hack. Basically the animation happens asynchronously but messages can still process, so
+    // e.g. if the player can play another card, the one being removed now has to be ignored
+    playerBox.disableDcCard(cardIdx);
 
-    let normalizedCoords = normalizeCoords(playerBox, dcCardAnimData.coords);
-    let deckCoords = denormalizeCoords(decks, normalizedCoords);
+    return animated((userIdx, cardIdx) => {
+      let dcCardAnimData;
+      user.player.dcCards.splice(cardIdx, 1);
 
-    return decks.discardDcCard(dcCardAnimData.cardDisp, deckCoords, TRANSITION_TIME);
-  }),
+      if(this._isMe(userIdx))
+        dcCardAnimData = playerBox.removeDcCard(cardIdx, TRANSITION_TIME);
+      else
+        dcCardAnimData = playerBox.removeRandomDcCard(TRANSITION_TIME);
+
+      let normalizedCoords = normalizeCoords(playerBox, dcCardAnimData.coords);
+      let deckCoords = denormalizeCoords(decks, normalizedCoords);
+
+      return decks.discardDcCard(dcCardAnimData.cardDisp, deckCoords, TRANSITION_TIME);
+    })(userIdx, cardIdx);
+  },
 
   giveMoneyFromBank: function(playerIdx, amount) {
     this._getPlayer(playerIdx).money += amount;
